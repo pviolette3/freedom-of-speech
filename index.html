@@ -3,9 +3,7 @@
 
 <script>
   var socket = io.connect('http://ec2-174-129-119-201.compute-1.amazonaws.com/');
-  alert("Attempting to connect");
   socket.on('connect', function() {
-    alert("ENTER YOUR NAME");
     socket.emit('adduser', prompt("Enter your name:"));
   });
 
