@@ -2,10 +2,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 
 <script>
-  var socket = io.connect('http://ec2-174-129-119-201.compute-1.amazonaws.com/');
-  socket.on('connect', function() {
-    socket.emit('adduser', prompt("Enter your name:"));
-  });
+  var socket = io.connect('http://'+ '<%= host %>/');
+//  var socket = io.connect('http://ec2-174-129-119-201.compute-1.amazonaws.com/');
+  document.name = prompt("Your name?");
+  socket.emit('adduser', document.name);
+  socket.emit('hello', "HIIII");
 
   socket.on('updatechat', function(username, data) {
     $('#conversation').append('<b>' + username + ':</b> ' + data + '<br>');
