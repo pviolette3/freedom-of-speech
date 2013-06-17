@@ -1,5 +1,6 @@
 var express = require('express');
 var socketio = require('socket.io');
+var path = require('path');
 
 var app = express(),
   http = require('http'),
@@ -15,7 +16,7 @@ app.set('view engine', 'ejs')
 app.configure(function() {
   app.use(express.methodOverride());
   app.use(express.bodyParser());
-//  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(path.join(__dirname, 'public')));
   app.use(app.router);
 });
 
@@ -29,7 +30,7 @@ app.get('/', function(req, res) {
   res.render('chat', {host:req.host});
 });
 
-var users = {}
+var users = []
 io.sockets.on('connection', function(socket) {
   socket.on('sendchat', function(data) {
     console.log('got send chat');
