@@ -1,17 +1,38 @@
 var express = require('express');
 var socketio = require('socket.io');
 
-var app = express.createServer();
-var io = socketio.listen(app);
+var app = express();
+var os = require('os');
+console.log('hostname ' + os.hostname());
 
-app.listen(80);
+function startServer() { 
+  var PORT = 8080;
+  process.argv.forEach(function(val, index, array) {
+    if(val == 'prod') {
+      PORT = 80;
+    }
+  });
+  app.set('view engine', 'ejs')
+  app.configure(function() {
+    app.use(express.methodOverride());
+    app.use(express.bodyParser());
+  //  app.use(express.static(__dirname + '/public'));
+    app.use(app.router);
+  });
+
+  var server = app.listen(PORT);
+  console.log("" + server.address().port);
+};
+
+startServer();
+
 app.get('/', function(req, res) {
-  res.sendfile(__dirname + '/index.html');
-  console.log("Sending index page...");
+  console.log('host', req.host);
+  res.render('chat', {host:req.host});
 });
 
 var users = {}
-
+var io = socketio.listen(app);
 io.sockets.on('connection', function(socket) {
   
   socket.on('sendchat', function(data) {

@@ -3,7 +3,7 @@
   "description" : "Demo censorship throughout different world countries",
   "version" : "0.0.1",
   "dependencies" : {
-    "express" : "2",
+    "express" : "3",
     "socket.io" : "0.8.4"
   }
 }
