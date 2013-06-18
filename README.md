@@ -2,23 +2,21 @@ This is a project for demoing how censorship works in a variety of countries for
 
 
 ================
-Install overview
+Environment setup
 ================
-We will install node version manager, then app specific packages.
 
-This is automated for you. All you need to do is
+Install required packages
 ````
-sudo bash install.sh
+sudo apt-get install git curl
 ````
 
-Overview of the steps:
+First, clone this repository, then run the install script:
+````
+git clone https://github.com/pviolette3/freedom-of-speech.git && cd freedom-of-speech
+bash install.sh
+````
 
-The steps will be
-1) sudo apt-get install curl #install curl if necessary
-2) curl https://raw.github.com/creationix/nvm/master/install.sh | sh
-3) source ~/.profile
-4) nvm install 0.10
-5) npm install
+You are done.
 
 =======
 Running
