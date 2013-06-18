@@ -1,42 +1,17 @@
+<script>
+  function getHost() {
+    return 'http://<%= host %>/'; 
+  }
+</script>
+
 <head>
-  <link rel="stylesheet" type="text/css" href="/style.css"> 
+  <link rel="stylesheet" type="text/css" href="/css/style.css"> 
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <script src="/js/chat.js" type="text/javascript"></script>
 </head>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-<script>
-  var socket = io.connect('http://'+ '<%= host %>/');
-//  var socket = io.connect('http://ec2-174-129-119-201.compute-1.amazonaws.com/');
-  document.name = prompt("Your name?");
-  socket.emit('adduser', document.name);
 
-  socket.on('updatechat', function(username, data) {
-    $('#conversation').append('<b>' + username + ':</b> ' + data + '<br>');
-  });
-
-  socket.on('updateusers', function(data) {
-    $('users').empty();
-    $.each(data, function(key, value) {
-      $('#users').append('<div>' + key + '</div>');
-    });
-  });
-
-  $(function() {
-    $('#datasend').click(function() {
-      var message = $('#data').val();
-      $('#data').val('');
-      $('#data').focus();
-      socket.emit('sendchat', message);
-    });
-
-    $('#data').keypress(function(e) {
-      if(e.which == 13) {//enter key
-        $(this).blur();
-        $('#datasend').focus().click();
-      }
-    });
-  });
-</script>
 
 <div class="users-container">
   <b>Users:</b>
@@ -48,4 +23,3 @@
   <input type="button" id="datasend" value="send"/>
   <div id="conversation"></div>
 </div>
-
