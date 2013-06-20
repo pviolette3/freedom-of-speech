@@ -21,35 +21,48 @@ app.configure(function() {
 });
 
 server.listen(PORT);
-console.log("" + server.address().port);
 io = socketio.listen(server);
-io.set('log level', 10);
+io.set('log level', 1);
 
 app.get('/', function(req, res) {
-  console.log('host', req.host);
   res.render('chat', {host:req.host});
 });
 
 var users = []
+
 io.sockets.on('connection', function(socket) {
+  
+  function addUser(user) {
+    if(users.indexOf(user) < 0) {
+      users.push(user);
+    }
+    return;
+  }
+
+  function removeUser(user) {
+    var index = users.indexOf(user);
+    if(index >= 0) {
+      users.splice(index, 1);
+    }
+  }
+
   socket.on('sendchat', function(data) {
-    console.log('got send chat');
     io.sockets.emit('updatechat', socket.user, data);
   });
 
   socket.on('adduser', function(username) {
     console.log("got add user");
     socket.user = username;
-    users[username] = username; //add, but don't duplicate
+    addUser(username);
+    console.log(users);
     socket.emit('updatechat', 'SERVER', 'you have connected');
-    socket.broadcast.emit('updatechat', 'SERVER', username + 'has connected.');
-    io.sockets.emit('updateusers', username);
+    socket.broadcast.emit('updatechat', 'SERVER: ', username + ' has connected.');
+    io.sockets.emit('updateusers', users);
   });
 
   socket.on('disconnect', function(){
-    console.log('got disconnect');
-    delete users[socket.user];
+    removeUser(socket.user);
     io.sockets.emit('updateusers', users);
-    socket.broadcast.emit('updatechat', 'SERVER', socket.user + ' has left.');
+    socket.broadcast.emit('updatechat', 'SERVER ', socket.user + ' has left.');
   });
 });

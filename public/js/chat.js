@@ -1,16 +1,16 @@
 var socket = io.connect(getHost());
-//  var socket = io.connect('http://ec2-174-129-119-201.compute-1.amazonaws.com/');
-document.name = prompt("Your name?");
-socket.emit('adduser', document.name);
+
+var name = prompt("Your name?");
+socket.emit('adduser', name);
 
 socket.on('updatechat', function(username, data) {
-  $('#conversation').append('<b>' + username + ':</b> ' + data + '<br>');
+  $('#conversation').prepend('<b>' + username + ':</b> ' + data + '<br>');
 });
 
 socket.on('updateusers', function(data) {
-  $('users').empty();
+  $('#users').empty();
   $.each(data, function(key, value) {
-    $('#users').append('<div>' + key + '</div>');
+    $('#users').append('<div>' + value + '</div>');
   });
 });
 
