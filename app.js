@@ -6,6 +6,8 @@ var app = express(),
   http = require('http'),
   server = http.createServer(app);
 
+var coordinators = require('./chat_coordinator')
+
 var PORT = 8080;
 process.argv.forEach(function(val, index, array) {
   if(val == 'prod') {
@@ -28,23 +30,9 @@ app.get('/', function(req, res) {
   res.render('chat', {host:req.host});
 });
 
-var users = []
+var chatCordinator = new coordinators.ChatCoordinator() 
 
 io.sockets.on('connection', function(socket) {
-  
-  function addUser(user) {
-    if(users.indexOf(user) < 0) {
-      users.push(user);
-    }
-    return;
-  }
-
-  function removeUser(user) {
-    var index = users.indexOf(user);
-    if(index >= 0) {
-      users.splice(index, 1);
-    }
-  }
 
   socket.on('sendchat', function(data) {
     io.sockets.emit('updatechat', socket.user, data);
@@ -53,16 +41,15 @@ io.sockets.on('connection', function(socket) {
   socket.on('adduser', function(username) {
     console.log("got add user");
     socket.user = username;
-    addUser(username);
-    console.log(users);
+    chatCordinator.addUser(username);
     socket.emit('updatechat', 'SERVER', 'you have connected');
     socket.broadcast.emit('updatechat', 'SERVER: ', username + ' has connected.');
-    io.sockets.emit('updateusers', users);
+    io.sockets.emit('updateusers', chatCordinator.getUsers());
   });
 
   socket.on('disconnect', function(){
-    removeUser(socket.user);
-    io.sockets.emit('updateusers', users);
+    chatCordinator.removeUser(socket.user);
+    io.sockets.emit('updateusers', chatCordinator.getUsers());
     socket.broadcast.emit('updatechat', 'SERVER ', socket.user + ' has left.');
   });
 });
