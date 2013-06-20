@@ -30,26 +30,26 @@ app.get('/', function(req, res) {
   res.render('chat', {host:req.host});
 });
 
-var chatCordinator = new coordinators.ChatCoordinator() 
+var chatCordinator = new coordinators.NoGunsCoordinator() 
 
 io.sockets.on('connection', function(socket) {
 
   socket.on('sendchat', function(data) {
-    io.sockets.emit('updatechat', socket.user, data);
+    chatCordinator.addMessage(socket.user, data);
+    io.sockets.emit('updatechat', chatCordinator.getMessages());
   });
 
   socket.on('adduser', function(username) {
     console.log("got add user");
     socket.user = username;
     chatCordinator.addUser(username);
-    socket.emit('updatechat', 'SERVER', 'you have connected');
-    socket.broadcast.emit('updatechat', 'SERVER: ', username + ' has connected.');
+    socket.broadcast.emit('updatechat', chatCordinator.getMessages());
     io.sockets.emit('updateusers', chatCordinator.getUsers());
   });
 
   socket.on('disconnect', function(){
     chatCordinator.removeUser(socket.user);
     io.sockets.emit('updateusers', chatCordinator.getUsers());
-    socket.broadcast.emit('updatechat', 'SERVER ', socket.user + ' has left.');
+    socket.broadcast.emit('updatechat', chatCordinator.getMessages());
   });
 });

@@ -3,8 +3,11 @@ var socket = io.connect(getHost());
 var name = prompt("Your name?");
 socket.emit('adduser', name);
 
-socket.on('updatechat', function(username, data) {
-  $('#conversation').prepend('<b>' + username + ':</b> ' + data + '<br>');
+socket.on('updatechat', function(data) {
+  $('#conversation').empty();
+  for(var i = 0; i < data.length; i++) {
+    $('#conversation').prepend('<div>' + data[i] + '</div>');
+  }
 });
 
 socket.on('updateusers', function(data) {
