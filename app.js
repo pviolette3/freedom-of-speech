@@ -30,7 +30,7 @@ app.get('/', function(req, res) {
   res.render('chat', {host:req.host});
 });
 
-var chatCordinator = new coordinators.NoGunsCoordinator() 
+var chatCordinator = coordinators.factory.newTextFileCoordinator(); 
 
 io.sockets.on('connection', function(socket) {
 
@@ -40,16 +40,15 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('adduser', function(username) {
-    console.log("got add user");
     socket.user = username;
     chatCordinator.addUser(username);
-    socket.broadcast.emit('updatechat', chatCordinator.getMessages());
+    io.sockets.emit('updatechat', chatCordinator.getMessages());
     io.sockets.emit('updateusers', chatCordinator.getUsers());
   });
 
   socket.on('disconnect', function(){
     chatCordinator.removeUser(socket.user);
     io.sockets.emit('updateusers', chatCordinator.getUsers());
-    socket.broadcast.emit('updatechat', chatCordinator.getMessages());
+    io.sockets.emit('updatechat', chatCordinator.getMessages());
   });
 });
