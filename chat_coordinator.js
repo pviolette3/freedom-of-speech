@@ -67,7 +67,7 @@ TextFileCoordinator.prototype.addMessage = function(user, message) {
   var censoredMessage = message;
   for(var i = 0; i < words.length; i++) { 
     var word = words[i];
-    if(this.censored.indexOf(word) > -1) {
+    if(this.censored.indexOf(word.toLowerCase()) > -1) {
       censoredMessage = '';
       console.log('bad word! ' + word + ' matched ' + this.censored[this.censored.indexOf(word)]);
       break;

@@ -10,4 +10,10 @@
   float: left;
   width:300px;
   height:250px;
+  padding-left: 10 px;
+}
+
+.censored {
+  color: red;
+  font-weight: bold;
 }

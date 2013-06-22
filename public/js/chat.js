@@ -1,6 +1,5 @@
 var socket = io.connect(getHost());
 
-
 socket.on('updatechat', function(data) {
   users = data[0];
   message = data[1];
@@ -11,7 +10,7 @@ socket.on('updatechat', function(data) {
        $('#conversation').prepend('<div><b>' + users[i]+':</b>' +message[i] + '</div>');
     } else {//There was no message => censored
        $('#conversation').prepend('<div class=censored>' 
-                                  + users[i] + '</div>');
+                                  + users[i] + ' got censored !</div>');
     }
   }
 });
@@ -42,3 +41,4 @@ $(function() {
 //after everything is set up, we add user
 var name = prompt("Your name?");
 socket.emit('adduser', name);
+$('#data').focus();
