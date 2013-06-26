@@ -47,7 +47,7 @@ function TextFileCoordinator(filename) {
   console.log('reading: ' + filename);
   fs.readFile(filename, 'utf8', function(err, data) {
     if(err) {return console.log(err);}
-    var words = data.split('\n');
+    var words = data.split(/\r\n|\r|\n/g);
     words.forEach(function(word) {
       if(word) {
         censored.push(word);
