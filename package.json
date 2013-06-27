@@ -3,8 +3,9 @@
   "description" : "Demo censorship throughout different world countries",
   "version" : "0.0.1",
   "dependencies" : {
-    "express" : "3",
-    "ejs" : "*",
-    "socket.io" : "*"
+    "express" : "3.2.6",
+    "ejs" : "0.8.4",
+    "socket.io" : "0.9.16",
+    "validator" : "*"
   }
 }

@@ -4,7 +4,8 @@ var path = require('path');
 
 var app = express(),
   http = require('http'),
-  server = http.createServer(app);
+  server = http.createServer(app),
+  sanitize = require('validator').sanitize;
 
 var coordinators = require('./chat_coordinator')
 
@@ -33,15 +34,18 @@ app.get('/', function(req, res) {
 var chatCordinator = coordinators.factory.newTextFileCoordinator(); 
 
 io.sockets.on('connection', function(socket) {
-
+  
+  function clean(data) {
+    return sanitize(data).xss();
+  }
   socket.on('sendchat', function(data) {
-    chatCordinator.addMessage(socket.user, data);
+    chatCordinator.addMessage(socket.user, clean(data));
     io.sockets.emit('updatechat', chatCordinator.getMessages());
   });
 
   socket.on('adduser', function(username) {
-    socket.user = username;
-    chatCordinator.addUser(username);
+    socket.user = clean(username);
+    chatCordinator.addUser(socket.user);
     io.sockets.emit('updatechat', chatCordinator.getMessages());
     io.sockets.emit('updateusers', chatCordinator.getUsers());
   });
