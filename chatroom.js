@@ -1,12 +1,21 @@
+var NoCensor = null; 
 
-function Room() {
+var noneCensor = {
+  censor: function(user, message) {
+    return NoCensor;
+  }
+};
+
+function Room(censor) {
   this.users = [];
   this.notifications = {};
+  this.censor = censor || noneCensor;
 }
 
 var updateCodes = {
   userChange: 1,
-  newMessage: 2
+  message: 2,
+  censored: 3
 }
 
 Room.prototype.addUser = function(user, callback) {
@@ -33,6 +42,26 @@ Room.prototype.notifyAllUsers = function(update) {
   });
 }
 
+Room.prototype.sendMessage = function(user, message) {
+  var objections = this.censor.censor(user, message);
+  var update = null;
+  if(objections) {
+    update = new Update(updateCodes.censored, objections);
+  }else {
+    update = new Update(updateCodes.message, new MessageUpdate(user, message)); 
+  }
+  this.notifyAllUsers(update);
+}
+
+function MessageUpdate(from, message) {
+  this.from = from;
+  this.message = message;
+}
+
+MessageUpdate.prototype.toString = function() {
+  return this.from.toString() + this.message.toString();
+}
+
 function Update(code, data) {
   this.code = code;
   this.data = data;
@@ -53,8 +82,18 @@ function User(name) {
 
 User.prototype.toString = function() {return this.name;}
 
+function YesCensor(from, message, reason ) {
+  this.message = message;
+  this.reason = reason;
+  this.from = from;
+}
+
+YesCensor.prototype.toString = function() {return this.from.toString() + this.message.toString() + this.reason.toString();}
+
 module.exports = {
  Room: Room,
  User: User,
- codes: updateCodes
+ codes: updateCodes,
+ NoCensor: NoCensor,
+ YesCensor: YesCensor
 };

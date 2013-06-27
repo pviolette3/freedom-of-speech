@@ -69,5 +69,76 @@ describe('chatroom package', function() {
         room.removeUser(first); 
       });
     });
+
+    describe('sending messages', function() {
+      var room = new chatroom.Room(),
+        one = new chatroom.User('one'),
+        two = new chatroom.User('two'),
+        three = new chatroom.User('three');
+      var messages = ['hi from one!',
+                      'hello there from three', 
+                      'whaddup from four'],
+        froms = [one, three, two],
+        i = 0,
+        hits = 0,
+        check = function(update) {
+          if(update.code === chatroom.codes.message) {
+            assert.equal(messages[i], update.data.message);
+            assert.equal(froms[i], update.data.from);
+            hits++;
+          }
+        };
+      beforeEach(function() {
+        room.addUser(one, check);
+        room.addUser(two, check);
+        room.addUser(three, check);
+      });
+      it('should send messages', function() {
+        for(var cur = 0; cur < froms.length; cur++) {
+          room.sendMessage(froms[cur], messages[cur]);
+          i++;
+        }
+        assert.equal(9, hits);
+      });
+    });
+
+    describe('#censor', function() {
+      var gunCensor = {
+        censor: function(user, message) {
+          if(message.indexOf('guns') > -1) {
+            return new chatroom.YesCensor(user, message, 'Contains guns. No good.');
+          }
+          return chatroom.NoCensor;
+        } 
+      };
+      var users = [new chatroom.User('Tom Brady'),
+                   new chatroom.User('Tiger Woods'),
+                   new chatroom.User('Steve Jobs')],
+          messages = ['hello there', 'i like guns :('],
+          sent = 0,
+          censors = 0,
+          check = function(update) {
+            if(update.code === chatroom.codes.censored) {
+              censors++;
+              assert.equal(messages[1], update.data.message);
+              assert.equal(users[2], update.data.from);
+              assert.equal('Contains guns. No good.', update.data.reason);
+            }else if(update.code === chatroom.codes.message) {
+              sent++
+              assert.equal(messages[0], update.data.message);
+              assert.equal(users[0], update.data.from);
+            }
+          };
+       var room = new chatroom.Room(gunCensor);
+       users.forEach(function(user){
+         room.addUser(user, check);
+       });
+       it('should censor based on the censor', function() {
+         room.sendMessage(users[0], messages[0]);
+         assert.equal(3, sent);
+         room.sendMessage(users[2], messages[1]);
+         assert.equal(3, censors);
+       });
+    });
   });
 });
