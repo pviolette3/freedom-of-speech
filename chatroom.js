@@ -17,7 +17,7 @@ var updateCodes = {
   userChange: 1,
   message: 2,
   censored: 3
-}
+};
 
 var doNothing = function(update) {}
 
@@ -110,10 +110,31 @@ function YesCensor(from, message, reason ) {
 
 YesCensor.prototype.toString = function() {return this.from.toString() + this.message.toString() + this.reason.toString();}
 
+function SocketIOForwardListener(to) {
+  this.to = to;
+}
+SocketIOForwardListener.prototype. onUpdate = function(update) {
+    if(update.code === updateCodes.message ||
+       update.code === updateCodes.updateUser ||
+       update.code === updateCodes.censored ) {
+      this.to.emit(update.code, update.data);
+    }
+};
+
+function createRoomWithListeners(listeners, censor) {
+  var room = new Room(censor);
+  listeners.forEach(function(listener) {
+    room.addListener(listener);
+  });
+  return room;
+}
+
 module.exports = {
- Room: Room,
- User: User,
- codes: updateCodes,
- NoCensor: NoCensor,
- YesCensor: YesCensor
+  Room: Room,
+  User: User,
+  codes: updateCodes,
+  createRoomWithListeners: createRoomWithListeners,
+  SocketIOForwardListener: SocketIOForwardListener,
+  NoCensor: NoCensor,
+  YesCensor: YesCensor
 };

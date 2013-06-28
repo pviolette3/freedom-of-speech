@@ -1,25 +1,28 @@
 var socket = io.connect(getHost());
+var codes = {
+  userChange: 1,
+  message: 2,
+  censored: 3
+};
 
-socket.on('updatechat', function(data) {
-  users = data[0];
-  message = data[1];
-
-  $('#conversation').empty();
-  for(var i = 0; i < message.length; i++) {
-    if(message[i]) {
-       $('#conversation').prepend('<div><b>' + users[i]+':</b>' +message[i] + '</div>');
-    } else {//There was no message => censored
-       $('#conversation').prepend('<div class=censored>' 
-                                  + users[i] + ' got censored !</div>');
-    }
-  }
+socket.on(codes.message, function(data) {
+    if(data.from && data.message) {
+       $('#conversation').prepend('<div><b>' + data.from.name +':</b>' + data.message + '</div>');
+    } 
 });
 
-socket.on('updateusers', function(data) {
+socket.on(codes.userChange, function(data) {
   $('#users').empty();
-  $.each(data, function(key, value) {
+  $.each(data.all, function(key, value) {
     $('#users').append('<div>' + value + '</div>');
   });
+});
+
+socket.on(codes.censored, function(data){
+  if(data.from && data.reason) {
+    $('#conversation').prepend('<div class="censored"><b>' + data.from.name +
+                               '</b> was censored because ' + data.reason + '</div>');
+  } 
 });
 
 $(function() {
