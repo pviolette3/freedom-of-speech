@@ -140,5 +140,42 @@ describe('chatroom package', function() {
          assert.equal(3, censors);
        });
     });
+
+    describe('#listeners', function() {
+      var room = new chatroom.Room(),
+        users = [new chatroom.User('Elmo'),
+                 new chatroom.User('Bert'),
+                 new chatroom.User('Ernie')];
+      it('takes listeners independent of users', function() {
+        var listener = {
+          i: 0,
+          expected: [chatroom.codes.userChange, chatroom.codes.userChange, chatroom.codes.message,
+                      chatroom.codes.userChange, chatroom.codes.message, chatroom.codes.message,
+                      chatroom.codes.userChange, chatroom.codes.userChange, chatroom.codes.userChange],
+          onUpdate: function(update) {
+            assert.equal(this.expected[this.i], update.code);
+            this.i++;
+          },
+          done: function() { return this.i >= this.expected.length;},
+          toString: function() {return '12345';}
+        };
+        room.addListener(listener);
+        room.addUser(users[0]);
+        room.addUser(users[1]);
+        room.sendMessage(users[0], 'Hi ' + users[1]);
+        room.addUser(users[2]);
+        room.sendMessage(users[2], "What's up guys??");
+        room.sendMessage(users[1], 'Hiyah I am the Karate Kid!');
+        users.forEach(function(user) {
+          room.removeUser(user);
+        });
+        assert.equal(listener.expected.length, listener.i);
+        var count_before = listener.i;
+        room.removeListener(listener);
+        room.addUser(users[0]);
+        room.removeUser(users[0]);
+        assert.equal(count_before, listener.i);
+      });
+    });
   });
 });

@@ -10,6 +10,7 @@ function Room(censor) {
   this.users = [];
   this.notifications = {};
   this.censor = censor || noneCensor;
+  this.listeners = [];
 }
 
 var updateCodes = {
@@ -18,9 +19,11 @@ var updateCodes = {
   censored: 3
 }
 
+var doNothing = function(update) {}
+
 Room.prototype.addUser = function(user, callback) {
   this.users.push(user);
-  this.notifications[user] = callback;
+  this.notifications[user] = callback || doNothing;
   var update = new Update(updateCodes.userChange, new UserChangeData(user, this.users));
   this.notifyAllUsers(update);
 }
@@ -40,6 +43,9 @@ Room.prototype.notifyAllUsers = function(update) {
   this.users.forEach(function(user) {
     that.notifications[user](update); 
   });
+  this.listeners.forEach(function(listener) {
+    listener.onUpdate(update);
+  });
 }
 
 Room.prototype.sendMessage = function(user, message) {
@@ -51,6 +57,20 @@ Room.prototype.sendMessage = function(user, message) {
     update = new Update(updateCodes.message, new MessageUpdate(user, message)); 
   }
   this.notifyAllUsers(update);
+}
+
+Room.prototype.addListener = function(listener) {
+  this.listeners.push(listener);
+}
+
+Room.prototype.removeListener = function(listener) {
+  console.log('im alive');
+  var rmIndex = this.listeners.indexOf(listener);
+  console.log('still there');
+  if(rmIndex > -1) {
+    console.log('rming');
+    this.listeners.splice(rmIndex, 1);
+  }
 }
 
 function MessageUpdate(from, message) {
