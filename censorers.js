@@ -33,7 +33,6 @@ ListCensorer.prototype.censor = function(from, message) {
   var censoredMessage = message;
   for(var i = 0; i < words.length; i++) { 
     var word = words[i];
-    console.log('Now censoring ' + word);
     if(this.censored.indexOf(word.toLowerCase()) > -1) {
       return new YesCensor(from, message, 'message contained a banned word.');
     }

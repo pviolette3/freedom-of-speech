@@ -7,12 +7,6 @@ function Room(censor) {
   this.listeners = [];
 }
 
-var updateCodes = {
-  userChange: 1,
-  message: 2,
-  censored: 3
-};
-
 Room.prototype.constructor = Room;
 var doNothing = function(update) {}
 
@@ -94,15 +88,28 @@ function User(name) {
 
 User.prototype.toString = function() {return this.name;}
 
+var updateCodes = {
+  userChange: 1,
+  message: 2,
+  censored: 3
+};
+
 
 function SocketIOForwardListener(to) {
   this.to = to;
 }
+
 SocketIOForwardListener.prototype. onUpdate = function(update) {
-    if(update.code === updateCodes.message ||
-       update.code === updateCodes.updateUser ||
-       update.code === updateCodes.censored ) {
+    if((update.code === updateCodes.message) ||
+       (update.code === updateCodes.userChange) ||
+       (update.code === updateCodes.censored) ) {
+      console.log('Sending update:');
+      console.log(update);
       this.to.emit(update.code, update.data);
+    }
+    else {
+      console.log('Unrecognized message type: ');
+      console.log(update);
     }
 };
 

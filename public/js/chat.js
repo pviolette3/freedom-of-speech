@@ -1,31 +1,11 @@
 var socket = io.connect(getHost());
 var codes = {
-  userChange: 1,
-  message: 2,
-  censored: 3
+  userChange: '1',
+  message: '2',
+  censored: '3'
 };
-
-socket.on(codes.message, function(data) {
-    if(data.from && data.message) {
-       $('#conversation').prepend('<div><b>' + data.from.name +':</b>' + data.message + '</div>');
-    } 
-});
-
-socket.on(codes.userChange, function(data) {
-  $('#users').empty();
-  $.each(data.all, function(key, value) {
-    $('#users').append('<div>' + value + '</div>');
-  });
-});
-
-socket.on(codes.censored, function(data){
-  if(data.from && data.reason) {
-    $('#conversation').prepend('<div class="censored"><b>' + data.from.name +
-                               '</b> was censored because ' + data.reason + '</div>');
-  } 
-});
-
 $(function() {
+  $('#data').focus();
   $('#datasend').click(function() {
     var message = $('#data').val();
     $('#data').val('');
@@ -40,8 +20,32 @@ $(function() {
     }
   });
 });
+socket.on('connect', function() {
+  socket.user = prompt('Name?');
+  socket.emit('adduser', socket.user);
+  
+  socket.on(codes.message, function(data) {
+     $('#conversation').prepend('<div><b>' + data.from.name +':</b>' + data.message + '</div>');
+  });
 
-//after everything is set up, we add user
-var name = prompt("Your name?");
-socket.emit('adduser', name);
-$('#data').focus();
+  socket.on(codes.userChange, function(data) {
+    $('#users').empty();
+    $.each(data.all, function(key, value) {
+      var userRep = value.name;
+      console.log('socket.user is ' + socket.user);
+      console.log(value);
+      if(socket.user === value.name) {
+        userRep = '<b>' + userRep + '</b>'
+      }
+      $('#users').append('<div>' + userRep + '</div>');
+    });
+  });
+
+  socket.on(codes.censored, function(data){
+    if(data.from && data.reason) {
+      $('#conversation').prepend('<div class="censored"><b>' + data.from.name +
+                                 '</b> was censored because ' + data.reason + '</div>');
+    } 
+  });
+});
+
