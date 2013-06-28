@@ -1,28 +1,11 @@
 var socket = io.connect(getHost());
-
-socket.on('updatechat', function(data) {
-  users = data[0];
-  message = data[1];
-
-  $('#conversation').empty();
-  for(var i = 0; i < message.length; i++) {
-    if(message[i]) {
-       $('#conversation').prepend('<div><b>' + users[i]+':</b>' +message[i] + '</div>');
-    } else {//There was no message => censored
-       $('#conversation').prepend('<div class=censored>' 
-                                  + users[i] + ' got censored !</div>');
-    }
-  }
-});
-
-socket.on('updateusers', function(data) {
-  $('#users').empty();
-  $.each(data, function(key, value) {
-    $('#users').append('<div>' + value + '</div>');
-  });
-});
-
+var codes = {
+  userChange: '1',
+  message: '2',
+  censored: '3'
+};
 $(function() {
+  $('#data').focus();
   $('#datasend').click(function() {
     var message = $('#data').val();
     $('#data').val('');
@@ -37,8 +20,32 @@ $(function() {
     }
   });
 });
+socket.on('connect', function() {
+  socket.user = prompt('Name?');
+  socket.emit('adduser', socket.user);
+  
+  socket.on(codes.message, function(data) {
+     $('#conversation').prepend('<div><b>' + data.from.name +':</b>' + data.message + '</div>');
+  });
 
-//after everything is set up, we add user
-var name = prompt("Your name?");
-socket.emit('adduser', name);
-$('#data').focus();
+  socket.on(codes.userChange, function(data) {
+    $('#users').empty();
+    $.each(data.all, function(key, value) {
+      var userRep = value.name;
+      console.log('socket.user is ' + socket.user);
+      console.log(value);
+      if(socket.user === value.name) {
+        userRep = '<b>' + userRep + '</b>'
+      }
+      $('#users').append('<div>' + userRep + '</div>');
+    });
+  });
+
+  socket.on(codes.censored, function(data){
+    if(data.from && data.reason) {
+      $('#conversation').prepend('<div class="censored"><b>' + data.from.name +
+                                 '</b> was censored because ' + data.reason + '</div>');
+    } 
+  });
+});
+
