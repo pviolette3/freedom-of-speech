@@ -6,6 +6,7 @@
     "express" : "3.2.6",
     "ejs" : "0.8.4",
     "socket.io" : "0.9.16",
-    "validator" : "*"
+    "validator" : "*",
+    "mocha" : "*"
   }
 }
