@@ -1,15 +1,9 @@
-var NoCensor = null; 
-
-var noneCensor = {
-  censor: function(user, message) {
-    return NoCensor;
-  }
-};
+var censorers = require('./censorers');
 
 function Room(censor) {
   this.users = [];
   this.notifications = {};
-  this.censor = censor || noneCensor;
+  this.censor = censor || censorers.censorNothing;
   this.listeners = [];
 }
 
@@ -19,6 +13,7 @@ var updateCodes = {
   censored: 3
 };
 
+Room.prototype.constructor = Room;
 var doNothing = function(update) {}
 
 Room.prototype.addUser = function(user, callback) {
@@ -64,11 +59,8 @@ Room.prototype.addListener = function(listener) {
 }
 
 Room.prototype.removeListener = function(listener) {
-  console.log('im alive');
   var rmIndex = this.listeners.indexOf(listener);
-  console.log('still there');
   if(rmIndex > -1) {
-    console.log('rming');
     this.listeners.splice(rmIndex, 1);
   }
 }
@@ -102,13 +94,6 @@ function User(name) {
 
 User.prototype.toString = function() {return this.name;}
 
-function YesCensor(from, message, reason ) {
-  this.message = message;
-  this.reason = reason;
-  this.from = from;
-}
-
-YesCensor.prototype.toString = function() {return this.from.toString() + this.message.toString() + this.reason.toString();}
 
 function SocketIOForwardListener(to) {
   this.to = to;
@@ -135,6 +120,4 @@ module.exports = {
   codes: updateCodes,
   createRoomWithListeners: createRoomWithListeners,
   SocketIOForwardListener: SocketIOForwardListener,
-  NoCensor: NoCensor,
-  YesCensor: YesCensor
 };

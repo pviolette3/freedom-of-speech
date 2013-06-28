@@ -1,89 +1,67 @@
 var fs = require('fs');
+var chatroom = require('./chatroom');
 
-function ChatCoordinator() {
-  this.users = [];
-  this.messages = [[], []];
-}
-
-ChatCoordinator.prototype.addUser = function(user) {
-    this.users.push(user);
-    return;
-}
-
-ChatCoordinator.prototype.removeUser = function (user) {
-  var index = this.users.indexOf(user);
-  if(index >= 0) {
-    this.users.splice(index, 1);
-  }
-}
-
-ChatCoordinator.prototype.getUsers = function() {
-  return this.users;
-}
-
-ChatCoordinator.prototype.getMessages = function() {
-  return this.messages;
-}
-
-ChatCoordinator.prototype.addMessage = function(user, message) {
-  this.messages[0].push(user);
-  this.messages[1].push(message);
-}
-
-function NoGunsCoordinator() {
-  ChatCoordinator.call(this);
-}
-NoGunsCoordinator.prototype = Object.create(ChatCoordinator.prototype);
-NoGunsCoordinator.prototype.constructor = NoGunsCoordinator;
-
-NoGunsCoordinator.prototype.addMessage = function(user, message) {
-  censoredMessage = message.replace('guns', 'CENSORED');
-  ChatCoordinator.prototype.addMessage.call(this, user, censoredMessage);
-}
-
-function TextFileCoordinator(filename) {
-  this.censored = [];
-  var censored = this.censored;
-  console.log('reading: ' + filename);
+function newBannedWordsCensorer(filename) {
+  var listCensored = new ListCensorer();
   fs.readFile(filename, 'utf8', function(err, data) {
     if(err) {return console.log(err);}
     var words = data.split(/\r\n|\r|\n/g);
     words.forEach(function(word) {
       if(word) {
-        censored.push(word);
+        listCensored.addBannedWord(word);
       }
     });
   });
-  ChatCoordinator.call(this);
+  return listCensored;
 }
+function ListCensorer(list) {
+  this.censored = [];
+  if(list) {
+    var that = this;
+    list.forEach(function(word) {
+      that.addBannedWord(word);
+    });
+  }
+};
 
-TextFileCoordinator.prototype = Object.create(ChatCoordinator.prototype);
-TextFileCoordinator.prototype.constructor = TextFileCoordinator;
+ListCensorer.prototype.addBannedWord = function(word) {
+  this.censored.push(word.toLowerCase());
+};
 
-TextFileCoordinator.prototype.addMessage = function(user, message) {
-  console.log('got message ' + message);
-  console.log('censoring it with ' + this.censored);
+ListCensorer.prototype.censor = function(from, message) {
   var words = message.split(' ');
   var censoredMessage = message;
   for(var i = 0; i < words.length; i++) { 
     var word = words[i];
+    console.log('Now censoring ' + word);
     if(this.censored.indexOf(word.toLowerCase()) > -1) {
-      censoredMessage = '';
-      console.log('bad word! ' + word + ' matched ' + this.censored[this.censored.indexOf(word)]);
-      break;
+      return new YesCensor(from, message, 'message contained a banned word.');
     }
-    console.log('Did not contain ' + word);
-   }
-   console.log(message + ' => ' + censoredMessage);
-  ChatCoordinator.prototype.addMessage.call(this, user, censoredMessage);
+  }
+  return NoCensor;
 }
 
-var chatCoordFactory = {
-  newChatCoordinator: function() { return new ChatCoordinator();},
-  newNoGunsCoordinator: function() { return new NoGunsCoordinator();},
-  newTextFileCoordinator: function() {return new TextFileCoordinator('bannedwords.txt');}
+function YesCensor(from, message, reason ) {
+  this.message = message;
+  this.reason = reason;
+  this.from = from;
+}
+
+YesCensor.prototype.toString = function() {return this.from.toString() + this.message.toString() + this.reason.toString();}
+
+var NoCensor = null; 
+
+var censorNothing = {
+  censor: function(user, message) {
+    return NoCensor;
+  },
+  toString: function() {return 'censor nothing';}
 };
 
-module.exports = {
-  factory: chatCoordFactory
-}
+exports.censorNothing = censorNothing;
+exports.results = {
+    Yes: YesCensor,
+    No: NoCensor
+};
+exports.ListCensorer = ListCensorer;
+exports.newBannedWordsCensorer = newBannedWordsCensorer;

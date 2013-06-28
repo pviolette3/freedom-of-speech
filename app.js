@@ -6,8 +6,9 @@ var app = express(),
   http = require('http'),
   server = http.createServer(app),
   sanitize = require('validator').sanitize,
-    check = require('validator').check;
-
+  check = require('validator').check;
+var chatroom = require('./chatroom'),
+    censorers = require('./censorers');
 
 var PORT = 8080;
 process.argv.forEach(function(val, index, array) {
@@ -51,9 +52,8 @@ app.get('/chat/:id', function(req, res) {
 function clean(data) {
   return sanitize(data).xss();
 }
-var chatroom = require('./chatroom');
 var listeners = [new chatroom.SocketIOForwardListener(io.sockets)];
-var theRoom = chatroom.createRoomWithListeners(listeners);
+var theRoom = chatroom.createRoomWithListeners(listeners, censorers.newBannedWordsCensorer('bannedwords.txt'));
 
 io.sockets.on('connection', function(socket) {
   socket.on('adduser', function(username) {
