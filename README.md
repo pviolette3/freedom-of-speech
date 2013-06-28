@@ -4,22 +4,42 @@ This is a project for demoing how censorship works in a variety of countries for
 ================
 Environment setup
 ================
+Install node + npm.
 
-Install required packages
-````
-sudo apt-get install git curl
-````
+Then, checkout the project
 
-First, clone this repository, then run the install script:
-````
-git clone https://github.com/pviolette3/freedom-of-speech.git && cd freedom-of-speech
-bash install.sh
-````
+```
+git clone https://github.com/pviolette3/freedom-of-speech && cd freedom-of-speech
+```
+and install packages (once in cloned repo)
+```
+npm install
+```
 
-You are done.
-
-=======
-Running
-=======
+===========
+Running App
+===========
 To run locally, just
+```
 node app.js
+```
+The app binds to localhost:8080, which you can visit in the browser http://localhost:8080/
+
+=============
+Running Tests
+=============
+Unit tests are written with the mocha framework. To run, install mocha globally
+```
+npm install -g mocha
+```
+or add a local installation of mocha to the path. Mocha installs to ```'(freedom of speech dir)/node_modules/mocha/bin'```
+
+To run tests, start in the root of the repository and run
+```
+mocha -R spec
+```
+
+To have mocha automatically run the tests when a file changes, add -G and -w parameters
+```
+mocha -R spec -G -w
+```
