@@ -18,7 +18,7 @@ describe('chatroom package', function() {
         room.addUser(user, function(update) {
           assert.deepEqual([user], update.data.all);
           assert.equal(user, update.data.changed);
-          assert.equal(chatroom.codes.userChange, update.code); 
+          assert.equal(chatroom.codes.addUser, update.code); 
           done();
         });
       });
@@ -32,7 +32,7 @@ describe('chatroom package', function() {
                         [first, second]],
             changed = [first, second],
             check = function(update) {
-              assert.equal(chatroom.codes.userChange, update.code);
+              assert.equal(chatroom.codes.addUser, update.code);
               assert.deepEqual(expected[i], update.data.all);
               assert.equal(changed[i], update.data.changed);
               i++;
@@ -53,15 +53,15 @@ describe('chatroom package', function() {
             changed = [first, second, first],
             check = function(update) {
               assert.ok(i < 2);
-              assert.equal(chatroom.codes.userChange, update.code);
+              assert.equal(chatroom.codes.addUser, update.code);
               assert.deepEqual(expected[i], update.data.all);
               assert.equal(changed[i], update.data.changed);
               i++;
             };
         room.addUser(first, check);
         room.addUser(second, function(update) {
-         assert.equal(chatroom.codes.userChange, update.code);
           if(i == 2 && j == 1) {
+             assert.equal(chatroom.codes.removeUser, update.code);
              assert.deepEqual(expected[i], update.data.all);
              assert.equal(changed[i], update.data.changed);
              done();
@@ -154,9 +154,9 @@ describe('chatroom package', function() {
       it('takes listeners independent of users', function() {
         var listener = {
           i: 0,
-          expected: [chatroom.codes.userChange, chatroom.codes.userChange, chatroom.codes.message,
-                      chatroom.codes.userChange, chatroom.codes.message, chatroom.codes.message,
-                      chatroom.codes.userChange, chatroom.codes.userChange, chatroom.codes.userChange],
+          expected: [chatroom.codes.addUser, chatroom.codes.addUser, chatroom.codes.message,
+                      chatroom.codes.addUser, chatroom.codes.message, chatroom.codes.message,
+                      chatroom.codes.removeUser, chatroom.codes.removeUser, chatroom.codes.removeUser],
           onUpdate: function(update) {
             assert.equal(this.expected[this.i], update.code);
             this.i++;

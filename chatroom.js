@@ -13,7 +13,7 @@ var doNothing = function(update) {}
 Room.prototype.addUser = function(user, callback) {
   this.users.push(user);
   this.notifications[user] = callback || doNothing;
-  var update = new Update(updateCodes.userChange, new UserChangeData(user, this.users));
+  var update = new Update(updateCodes.addUser, new UserChangeData(user, this.users));
   this.notifyAllUsers(update);
 }
 
@@ -23,7 +23,7 @@ Room.prototype.removeUser = function(user) {
     this.users.splice(rmIndex, 1);
     this.notifications[user] = undefined;
   }
-  var update = new Update(updateCodes.userChange, new UserChangeData(user, this.users));
+  var update = new Update(updateCodes.removeUser, new UserChangeData(user, this.users));
   this.notifyAllUsers(update);
 }
 
@@ -89,9 +89,10 @@ function User(name) {
 User.prototype.toString = function() {return this.name;}
 
 var updateCodes = {
-  userChange: 1,
-  message: 2,
-  censored: 3
+  addUser: 1,
+  removeUser: 2,
+  message: 3,
+  censored: 4
 };
 
 
@@ -101,7 +102,8 @@ function SocketIOForwardListener(to) {
 
 SocketIOForwardListener.prototype. onUpdate = function(update) {
     if((update.code === updateCodes.message) ||
-       (update.code === updateCodes.userChange) ||
+       (update.code === updateCodes.addUser) ||
+       (update.code === updateCodes.removeUser) ||
        (update.code === updateCodes.censored) ) {
       console.log('Sending update:');
       console.log(update);
