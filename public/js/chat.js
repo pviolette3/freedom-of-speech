@@ -1,8 +1,9 @@
 var socket = io.connect(getHost());
 var codes = {
-  userChange: '1',
-  message: '2',
-  censored: '3'
+  addUser: '1',
+  removeUser: '2',
+  message: '3',
+  censored: '4'
 };
 $(function() {
   $('#data').focus();
@@ -24,13 +25,9 @@ socket.on('connect', function() {
   socket.user = prompt('Name?');
   socket.emit('adduser', socket.user);
   
-  socket.on(codes.message, function(data) {
-     $('#conversation').prepend('<div><b>' + data.from.name +':</b>' + data.message + '</div>');
-  });
-
-  socket.on(codes.userChange, function(data) {
+  function updateUsers(users) {
     $('#users').empty();
-    $.each(data.all, function(key, value) {
+    $.each(users, function(key, value) {
       var userRep = value.name;
       console.log('socket.user is ' + socket.user);
       console.log(value);
@@ -39,11 +36,29 @@ socket.on('connect', function() {
       }
       $('#users').append('<div>' + userRep + '</div>');
     });
+  }
+
+  function addConversation(message) {
+   $('#conversation').prepend(message); 
+  }
+
+  socket.on(codes.message, function(data) {
+     addConversation('<div><b>' + data.from.name +'</b>: ' + data.message + '</div>');
+  });
+
+  socket.on(codes.addUser, function(data) {
+    addConversation('<div>' + data.changed.name + ' was added.</div>');
+    updateUsers(data.all);
+  });
+
+  socket.on(codes.removeUser, function(data) {
+    addConversation('<div>' + data.changed.name + ' has left.</div>'); 
+    updateUsers(data.all);
   });
 
   socket.on(codes.censored, function(data){
     if(data.from && data.reason) {
-      $('#conversation').prepend('<div class="censored"><b>' + data.from.name +
+      addConversation('<div class="censored"><b>' + data.from.name +
                                  '</b> was censored because ' + data.reason + '</div>');
     } 
   });
