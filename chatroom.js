@@ -105,8 +105,8 @@ SocketIOForwardListener.prototype. onUpdate = function(update) {
        (update.code === updateCodes.addUser) ||
        (update.code === updateCodes.removeUser) ||
        (update.code === updateCodes.censored) ) {
-      console.log('Sending update:');
-      console.log(update);
+//      console.log('Sending update:');
+//      console.log(update);
       this.to.emit(update.code, update.data);
     }
     else {

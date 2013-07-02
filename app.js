@@ -5,6 +5,7 @@ var app = express(),
   http = require('http'),
   server = http.createServer(app),
   sanitize = require('validator').sanitize,
+  models = require('./models');
   check = require('validator').check;
 
 
@@ -12,12 +13,8 @@ var chatroom = require('./chatroom'),
     censorers = require('./censorers'),
     routes = require('./routes');
 
-var PORT = 8080;
-process.argv.forEach(function(val, index, array) {
-  if(val == 'prod') {
-    PORT = 80;
-  }
-});
+var PORT = process.env.PORT || 8080;
+
 app.set('view engine', 'ejs')
 app.configure(function() {
   app.use(express.methodOverride());
@@ -36,16 +33,19 @@ function clean(data) {
   return sanitize(data).xss();
 }
 var listeners = [new chatroom.SocketIOForwardListener(io.sockets)];
+if(process.env.RUNMONGO && process.env.RUNMONGO != 'no') {
+  models.activate();
+  listeners.push(models.newMongoDBListener());
+}
+
 var theRoom = chatroom.createRoomWithListeners(listeners, censorers.newBannedWordsCensorer('bannedwords.txt'));
 io.sockets.on('connection', function(socket) {
-  console.log('connection to ' + socket.id);
+
   socket.on('adduser', function(username) {
-    console.log('Adding user ' + username);
     socket.user = new chatroom.User(clean(username));
     theRoom.addUser(socket.user);
   });
   socket.on('disconnect', function() {
-    console.log('disocnneting ' + socket.user);
     theRoom.removeUser(socket.user);
   });
   socket.on('sendchat', function(data) {
