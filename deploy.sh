@@ -1,1 +1,3 @@
-sudo nohup node app prod
+export PORT=80
+sudo nohup node app
+
