@@ -25,6 +25,11 @@ node app.js
 ```
 The app binds to localhost:8080, which you can visit in the browser http://localhost:8080/
 
+By default, the app does NOT hook up to mongo db. To activate the database backend,
+simply export the envirnment variable ```RUN_MONGO``` to anything except 'no'.
+
+To change the port on which the app runs, set the ```PORT``` environment variable.
+
 =============
 Running Tests
 =============
