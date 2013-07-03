@@ -1,5 +1,9 @@
 export RUNMONGO='yes'
-export PORT=80
-
-sudo nohup node app
+export PORT=8080
+if [[ "$1" == "-k" ]]
+then
+  nohup node app
+else
+  node app
+fi
 

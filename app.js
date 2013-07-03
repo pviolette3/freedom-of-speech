@@ -22,7 +22,7 @@ app.configure(function() {
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(app.router);
 });
-
+console.log('Launching app on port ' + PORT + '.');
 server.listen(PORT);
 io = socketio.listen(server);
 io.set('log level', 1);
