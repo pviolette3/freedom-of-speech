@@ -36,20 +36,16 @@ var Conversation = mongoose.model('Conversation', conversationSchema);
 function MongoDBListener(conversation, autosave) {
   this.conversation = conversation;
   this.autosave = autosave;
-  console.log('autosave is ' + autosave);
 };
 
 MongoDBListener.prototype.onUpdate = function(update) {
-  console.log('mongodb listener was updated');
   this.conversation.history.push(new Update(update));
   if(this.autosave) {
-    console.log('saving conversation...');
-    console.log(this.conversation);
     this.conversation.save(function(err) {
       if(err) {
         console.log(err);
       }else {
-        console.log('save successful');
+        console.log('save successful.');
       }
     });
   }
