@@ -1,3 +1,4 @@
+var fs = require('fs');
 var censorers = require('./censorers');
 
 function Room(censor) {
@@ -115,6 +116,30 @@ SocketIOForwardListener.prototype. onUpdate = function(update) {
     }
 };
 
+function FSLogger(censoredName, noncensoredName) {
+  this.censoredName = censoredName;
+  this.noncensoredName = noncensoredName;
+}
+
+FSLogger.prototype.onUpdate = function(update) {
+  var that = this;
+    if(update.code === updateCodes.message) {
+      fs.appendFile(this.noncensoredName, update.data.message + '\n', function(err) {
+        if(err) {
+          console.log("ERROR appending to file " + that.censoredName);
+          console.log(err);
+        }
+      });
+    }
+    else if(update.code === updateCodes.censored) {
+      fs.appendFile(this.censoredName, update.data.message + '\n', function(err) {
+         if(err) {
+          console.log("ERROR appending to file " + that.noncensoredName);
+          console.log(err);
+        }
+     });
+    }
+}
 function createRoomWithListeners(listeners, censor) {
   var room = new Room(censor);
   listeners.forEach(function(listener) {
@@ -129,4 +154,5 @@ module.exports = {
   codes: updateCodes,
   createRoomWithListeners: createRoomWithListeners,
   SocketIOForwardListener: SocketIOForwardListener,
+  FSCensorLogger: FSLogger
 };

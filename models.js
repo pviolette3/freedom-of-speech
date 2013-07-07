@@ -45,7 +45,7 @@ MongoDBListener.prototype.onUpdate = function(update) {
       if(err) {
         console.log(err);
       }else {
-        console.log('save successful.');
+//        console.log('save successful.');
       }
     });
   }
