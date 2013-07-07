@@ -1,5 +1,0 @@
-a,0
-steve,10.0
-the,0
-jim,10.0
-hello,10.0
