@@ -18,6 +18,24 @@ function activate(app, check) {
     }
     return res.send(req.params.id);
   });
+
+  app.get('/login', function(req, res) {
+    return res.render('login');
+  });
+
+  app.post('/login', function(req, res) {
+    var their_name = req.body.user;
+    try {
+      check(their_name, {
+        notNull: 'Please enter your username',
+        notEmpty: 'Please enter your username',
+        isAlphanumeric: 'Please enter only numbers and letters'
+      }).notNull().notEmpty().isAlphanumeric();
+    }catch(e) {
+      res.redirect('/login')
+    }
+    res.render('/chat', {host: req.host, user: their_name})
+  });
 }
 
 exports.activate = activate;
