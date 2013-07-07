@@ -5,6 +5,9 @@ function activate(app, check, sanitize) {
 
   app.get('/chat', function(req, res) {
     console.log('GET /chat');
+    if(!req.cookies.user) {
+      return res.redirect('/login');
+    }
     res.render('chat', {host:req.host, user: req.cookies.user || 'none'});
   });
 
@@ -54,7 +57,7 @@ function activate(app, check, sanitize) {
 
 
   app.get('/logout', function(req, res) {
-    res.clearCookie('user' {path: '/login'});
+    res.clearCookie('user', {path: '/login'});
     res.clearCookie('user', {path: '/chat'});
     res.redirect('/login');
   });
