@@ -1,11 +1,4 @@
-/*.users-container { 
-  float:left;
-  width:100px;
-  border-right:1px solid black;
-  height: 300px;
-  padding:10px;
-}
-
+/*
 .conversation-container {
   float: left;
   width:300px;
@@ -14,9 +7,34 @@
 }
 */
 
-#user-container{
-    border-right-style:solid;
+body, html {
+    height:100%;
+    overflow:hidden;
 }
+
+.navbar-inner {
+    height:40px;
+}
+
+.scrollable {
+    height:90%;
+    overflow:auto;
+}
+
+.max-height {
+    height:90%;
+}
+
+.no-overflow {
+    overflow:hidden;
+}
+
+.pad40-top {
+    padding-top:40px;
+}
+
+//#user-container{
+//}
 
 #data{
     margin:0px;
