@@ -37,7 +37,9 @@ if(process.env.RUNMONGO && process.env.RUNMONGO != 'no') {
   models.activate();
   listeners.push(models.newMongoDBListener());
 }
-
+if(process.env.RUNLOG && process.env.RUNLOG != 'no') {
+  listeners.push(new chatroom.FSCensorLogger('ml/censored.txt', 'ml/noncensored.txt'));
+}
 var theRoom = chatroom.createRoomWithListeners(listeners, censorers.newBannedWordsCensorer('bannedwords.txt'));
 io.sockets.on('connection', function(socket) {
 

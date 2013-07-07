@@ -2,18 +2,17 @@ var fs = require('fs');
 var censors = require('censorers');
 
 function newMLLinearCombCensor(weightsFilename, callback) {
-  fs.readFile(weightsFilename, 'utf8', function(err, data) {
-    var resultWeights = {} 
-    if(err) { return console.log(err);}
-    lines = data.split(/\r\n|\r|\n/g);
-    for(var i = 0; i < lines.length; i++) {
-      tokens = lines[i].split(',');
-      word = tokens[0]
-      weight = tokens[1]
-      resultWeights[word] = parseFloat(weight);
-      callback(new MLLinearCombCensor(resultWeights, threshold));
-    } 
-  });
+  var data = fs.readSync(weightsFilename, 'utf8');
+  var resultWeights = {} 
+  lines = data.split(/\r\n|\r|\n/g);
+  for(var i = 0; i < lines.length; i++) {
+    tokens = lines[i].split(',');
+    word = tokens[0]
+    weight = tokens[1]
+    resultWeights[word] = parseFloat(weight);
+  }
+  
+ return new MLLinearCombCensor(resultWeights, threshold);
 }
 
 function MLLinearCombCensor(weights, threshold, tokenizer) {
