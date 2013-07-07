@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Welcome to the Free Speech Censorship Chatroom!</h1>
+
+This chatroom will provide you and your classmates with a firsthand experience of being censored while you're communicating with each other. In countries around the world, there are different levels of internet censorship depending on the laws of that country. For instance, many countries such as Spain, the United States, Afghanistan, and Iraq have very low levels of internet censorship. Some countries such as France and Russia have a medium level of censorship, where a lot of things are allowed but you can still get in trouble for things that you say. Some countries such as China, Syria, and Ethiopia have very serious restrictions on the things you can and can't say online, and you may risk a fine or even imprisonment for violating those restrictions!
+
+Through this website you will be shown these different levels of censorship by trying out different "censor bots" named for the countries they represent. These "censor bots" all have different rules and algorithms based on the country they're replicating. We will ask you to chat with your friends about a certain topic, and as you type these bots will be examining what you say to see if it is permissible before allowing it to be posted.
+
+Afterwards you can read more about that country's censorship policies, and let us know how you felt about being censored and how you feel about censorship in general. Some people think that free speech should be just that, free all the time no matter what. Some people think that sometimes censorship can be necessary. And some people think that if everyone was allowed to say whatever they wanted to everyone else, there would be more problems, so speech should be watched and restricted.
+
+Try our chatroom and let us know how you feel! If you would like more information, check out our Information Pages!
+
+</body>
+<html>
