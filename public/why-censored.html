@@ -1,5 +1,38 @@
 <!DOCTYPE html>
 <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="/css/chat.css"> 
+      <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    </head>
+
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="#">Censor.me</a>
+                <div class="nav-collapse collapse">
+                    <p class="navbar-text pull-right">You are: You!</p>
+                    <ul class="nav">
+                        <li class="active">
+                            <a href="#">Conversation</a>
+                        </li>
+                        <li>
+                            <a href="intro_page_content.html">About Us!</a>
+                        </li>
+                        <li>
+                            <a href="censorship_by_country.html">Rules</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 <body>
 
 <h1>Why did I get censored?</h1>
