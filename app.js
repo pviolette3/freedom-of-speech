@@ -40,7 +40,8 @@ if(process.env.RUNMONGO && process.env.RUNMONGO != 'no') {
 if(process.env.RUNLOG && process.env.RUNLOG != 'no') {
   listeners.push(new chatroom.FSCensorLogger('ml/censored.txt', 'ml/noncensored.txt'));
 }
-var theRoom = chatroom.createRoomWithListeners(listeners, censorers.newBannedWordsCensorer('bannedwords.txt'));
+var censorer = censorers.newMLLinearCombCensor();
+var theRoom = chatroom.createRoomWithListeners(listeners, censorer);
 io.sockets.on('connection', function(socket) {
 
   socket.on('adduser', function(username) {
