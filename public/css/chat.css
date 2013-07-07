@@ -1,4 +1,4 @@
-.users-container { 
+/*.users-container { 
   float:left;
   width:100px;
   border-right:1px solid black;
@@ -12,7 +12,15 @@
   height:250px;
   padding-left: 10 px;
 }
+*/
 
+#user-container{
+    border-right-style:solid;
+}
+
+#data{
+    margin:0px;
+}
 .censored {
   color: red;
   font-weight: bold;

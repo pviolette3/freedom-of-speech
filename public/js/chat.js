@@ -58,7 +58,7 @@ socket.on('connect', function() {
 
   socket.on(codes.censored, function(data){
     if(data.from && data.reason) {
-      addConversation('<div class="censored"><b>' + data.from.name +
+      addConversation('<div class="text-error"><b>' + data.from.name +
                                  '</b> was censored because ' + data.reason + '</div>');
     } 
   });
