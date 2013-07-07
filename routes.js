@@ -1,10 +1,11 @@
-function activate(app, check) {
+function activate(app, check, sanitize) {
   app.get('/', function(req, res) {
-    res.redirect('/chat');
+    res.redirect('/login');
   });
 
   app.get('/chat', function(req, res) {
-    res.render('chat', {host:req.host});
+    console.log('GET /chat');
+    res.render('chat', {host:req.host, user: req.cookies.user || 'none'});
   });
 
   app.get('/chat/:id', function(req, res) {
@@ -20,10 +21,15 @@ function activate(app, check) {
   });
 
   app.get('/login', function(req, res) {
-    return res.render('login');
+   if(req.cookies.user) {
+     return res.redirect('/chat');
+   }
+   return res.render('login');
   });
 
   app.post('/login', function(req, res) {
+    console.log('Got POST /login: cookies are');
+    console.log(req.cookies);
     var their_name = req.body.user;
     try {
       check(their_name, {
@@ -31,10 +37,26 @@ function activate(app, check) {
         notEmpty: 'Please enter your username',
         isAlphanumeric: 'Please enter only numbers and letters'
       }).notNull().notEmpty().isAlphanumeric();
+      sanitize(their_name).xss();
     }catch(e) {
-      res.redirect('/login')
+      console.log(e);
+      res.cookie('error', e.message, {
+          path: '/login', secure: true});
+      return res.redirect('/login');
     }
-    res.render('/chat', {host: req.host, user: their_name})
+    //success!
+    console.log('success!! Logging in...');
+    res.clearCookie('error', {path: '/login'});
+    res.cookie('user', their_name, {path: '/login'});
+    res.cookie('user', their_name, {path: '/chat'})
+    res.redirect('/chat');
+  });
+
+
+  app.get('/logout', function(req, res) {
+    res.clearCookie('user' {path: '/login'});
+    res.clearCookie('user', {path: '/chat'});
+    res.redirect('/login');
   });
 }
 
