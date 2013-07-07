@@ -1,6 +1,18 @@
 var fs = require('fs');
 var censors = require('censorers');
 
+function newMLLinearCombCensor(weightsFilename) {
+  fs.readFile(weightsFilename, functioin(err, data) {
+    if(err) {
+      return console.log(err);
+    }
+    
+    for(var i = 0; i < data.length; i++) {
+    
+    }
+  });
+}
+
 function MLLinearCombCensor(weights, threshold, tokenizer) {
   this.weights = weights || {};
   this.threshold = threshold || 10.0;
