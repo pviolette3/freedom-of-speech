@@ -22,7 +22,7 @@ $(function() {
   });
 });
 socket.on('connect', function() {
-  socket.user = prompt('Name?');
+  socket.user = getUser();
   socket.emit('adduser', socket.user);
   
   function updateUsers(users) {
