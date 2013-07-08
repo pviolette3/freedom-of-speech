@@ -14,16 +14,16 @@ def build_weights(whitelist_name, blacklist_name, greylist_name):
   with open(blacklist_name) as blacklist:
     for line in blacklist:
       cleaned = strip(line)
-      if(cleaned and not cleaned in result):
+      if cleaned and not (cleaned in result):
         result[cleaned] = 10.0
-  format(result)
-
   with open(greylist_name) as greylist:
     for line in greylist:
       word, weight, frequency = line.split(',') 
-      cleaned = strip(word)
-      if(cleaned and not cleaned in result):
+      cleaned = word
+      if cleaned and not (cleaned in result):
         result[cleaned] = weight
+
+  format(result)
   return None
 
 def format(result_hash):
@@ -44,7 +44,4 @@ if __name__ == '__main__':
     black = sys.argv[2]
   if len(sys.argv) > 4:
     grey = sys.argv[3]
-  print "Using whitelist as %s" % white
-  print "Using blacklist as %s" % black
-  print "Using greylist as %s" % grey
   build_weights(white, black, grey)
