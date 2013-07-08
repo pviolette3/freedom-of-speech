@@ -39,7 +39,7 @@ if(process.env.RUNMONGO && process.env.RUNMONGO != 'no') {
   listeners.push(models.newMongoDBListener());
 }
 if(process.env.RUNLOG && process.env.RUNLOG != 'no') {
-  listeners.push(new chatroom.FSCensorLogger('ml/censored.txt', 'ml/noncensored.txt'));
+  listeners.push(new chatroom.FSCensorLogger('ml/censored.txt', 'ml/uncensored.txt'));
 }
 var censorer = censorers.newMLLinearCombCensor();
 var theRoom = chatroom.createRoomWithListeners(listeners, censorer);
