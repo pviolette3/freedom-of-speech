@@ -6,8 +6,8 @@
   }
   
   function getUser() {
-    //return ' username';
-    return prompt('Name?');
+    return '<%= user %>';
+    //return prompt('Name?');
   } 
 </script>
 
@@ -39,7 +39,10 @@
                             <a href="intro_page_content.html">About Us!</a>
                         </li>
                         <li>
-                            <a href="censorship_by_country.html">Rules</a>
+                            <a href="censorship_by_country.html">Country Laws</a>
+                        </li>
+                        <li>
+                            <a href="why-censored.html">Rules</a>
                         </li>
                     </ul>
                 </div>
@@ -56,7 +59,7 @@
             <div class="span8 max-height"><!--conversation-container-->
               <h4>Conversation</h4>
               <input type="text" id="data" value="" />
-              <input type="button" id="datasend" value="send"/>
+              <input type="button" class="btn" id="datasend" value="send"/>
               <div id="conversation" class="scrollable"></div>
             </div>
         </div>

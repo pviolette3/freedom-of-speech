@@ -20,6 +20,7 @@ app.configure(function() {
   app.use(express.methodOverride());
   app.use(express.bodyParser());
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.cookieParser());
   app.use(app.router);
 });
 console.log('Launching app on port ' + PORT + '.');
@@ -27,7 +28,7 @@ server.listen(PORT);
 io = socketio.listen(server);
 io.set('log level', 1);
 
-routes.activate(app, check);
+routes.activate(app, check, sanitize);
 
 function clean(data) {
   return sanitize(data).xss();
