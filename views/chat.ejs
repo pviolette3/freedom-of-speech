@@ -13,9 +13,13 @@
 
 <head>
   <link rel="stylesheet" type="text/css" href="/css/chat.css"> 
-  <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-responsive.min.css">
+  <script src="/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+  <script src="/bootstrap/js/bootstrap-transition.js" type="text/javascript"></script>
+  <script src="/bootstrap/js/bootstrap-collapse.js" type="text/javascript"></script>
+  <script src="/socket.io/socket.io.js" type="text/javascript" ></script>
+  <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>-->
   <script src="/js/chat.js" type="text/javascript"></script>
 </head>
 
@@ -23,14 +27,14 @@
     <div class="navbar">
         <div class="navbar-inner">
             <div class="container-fluid">
-                <button type="button" class="btn btn-navbar" data-toggle="collapse" target=".nav-collapse">
+                <a type="button" class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button>
+                </a>
                 <a class="brand" href="#">Censor.me</a>
                 <div class="nav-collapse collapse">
-                    <p class="navbar-text pull-right">You are: <% getUser() %></p>
+                    <p class="navbar-text pull-right">You are: getUser() <a href="/logout">Logout</a></p>
                     <ul class="nav">
                         <li class="active">
                             <a href="#">Conversation</a>
@@ -45,6 +49,11 @@
                             <a href="why-censored.html">Rules</a>
                         </li>
                     </ul>
+                    <!--<ul class="nav pull-right">
+                        <li>
+                            You are: getUser() <a href="/logout">Logout</a>
+                        </li>
+                    </ul>-->
                 </div>
             </div>
         </div>
