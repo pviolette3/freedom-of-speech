@@ -31,7 +31,9 @@ Room.prototype.removeUser = function(user) {
 Room.prototype.notifyAllUsers = function(update) {
   var that = this;
   this.users.forEach(function(user) {
-    that.notifications[user](update); 
+    if(that.notifications[user] && typeof(that.notifications[user] === 'function' )) {
+      that.notifications[user](update); 
+    }
   });
   this.listeners.forEach(function(listener) {
     listener.onUpdate(update);
