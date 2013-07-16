@@ -1,9 +1,9 @@
 import re, string
 
 blackListFile = open("blacklist.txt", "r")
-censoredListFile = open("censoredlist.txt", "r+")
+censoredListFile = open("censored.txt", "r+")
 whiteListFile = open("whitelist.txt", "r")
-uncensoredListFile = open("uncensoredlist.txt", "r+")
+uncensoredListFile = open("uncensored.txt", "r+")
 greyListFile = open("greylist.txt", "r+")
 
 blackListing = blackListFile.read()
@@ -31,42 +31,36 @@ whiteSet = set(whiteList)
 #uncensoredList = list(set(uncensoredList) - set(whiteList))
 #censoredList = censoredList.remove(blackList)
 
-result = {} #make sure this is read from the greylist
+result = {}
 
 #result[greylist_word] = [weight, summation, freq]
 for item in greyList:
 	if item != '':
-		word, weight, summation, frequency = item.split(',')
-		result[word] = [float(weight), 0, float(frequency)]
+		word, weight, frequency = item.split(',')
+		result[word.lower()] = [float(weight), 0.0, float(frequency)]
 
 for word in censoredList:
-	if word in blackSet or word in whiteSet:
+	if word.lower() in blackSet or word.lower() in whiteSet:
 		continue
-	elif word in result:
-		result[word][1] += 1
-		result[word][2] += 1
+	elif word.lower() in result:
+		result[word.lower()][1] += 1
+		result[word.lower()][2] += 1
 	else:
-		result[word] = [0,1,1]
+		result[word.lower()] = [0.0,1.0,1.0]
 
 for word in uncensoredList:
-	if word in blackSet or word in whiteSet:
+	if word.lower() in blackSet or word.lower() in whiteSet:
 		continue
-	elif word in result:
-		result[word][1] -= 1
-		result[word][2] += 1
+	elif word.lower() in result:
+		result[word.lower()][1] -= 1
+		result[word.lower()][2] += 1
 	else:
-		result[word] = [0,-1,1]
+		result[word.lower()] = [0.0,-1.0,1.0]
 
 
 
 def done(result):
 	for word, values in result.items():
-		print "%s,%s,%s,%s\n" % (word, values[0], values[1], values[2])
+		print "%s,%s,%s" % (word.lower(), values[0] + float(values[1])/float(values[2]), values[2])
 
 done(result)
-
-
-
-
-
-

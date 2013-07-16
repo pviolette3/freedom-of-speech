@@ -27,7 +27,7 @@ function activate(app, check, sanitize) {
    if(req.cookies.user) {
      return res.redirect('/chat');
    }
-   return res.render('login');
+   return res.render('login', {error: null});
   });
 
   app.post('/login', function(req, res) {
@@ -43,9 +43,7 @@ function activate(app, check, sanitize) {
       sanitize(their_name).xss();
     }catch(e) {
       console.log(e);
-      res.cookie('error', e.message, {
-          path: '/login', secure: true});
-      return res.redirect('/login');
+      return res.render('login', {error: e.message});
     }
     //success!
     console.log('success!! Logging in...');
