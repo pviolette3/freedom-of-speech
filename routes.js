@@ -13,7 +13,9 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
   });
 
   app.get('/chat/:id', function(req, res) {
-    if(!check(req.params.id).isInt()) {
+    try {
+      check(req.params.id).isInt()
+    }catch(e) { 
       res.statusCode = 404;
       return res.send('Error: 404 not found');
     }
@@ -22,6 +24,9 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
       return res.send('Error: 404 not found');
     }
     var id = req.params.id;
+    if(!rooms[id]) {
+      return res.send('Error: No room with ' + id + ' exists.');
+    }
     if(req.cookies.user) {
       return res.render('active_chat', {host: req.host, name: rooms[id].name, user: req.cookies.user, id: id});
     }else {
@@ -38,7 +43,6 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
 
   app.post('/login', function(req, res) {
     console.log('Got POST /login: cookies are');
-    console.log(req.cookies);
     var their_name = req.body.user;
     try {
       check(their_name, {
@@ -74,13 +78,19 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
   var rooms = {};
   app.post('/chat/new', function(req, res) {
     var name = clean(req.body.name);
+    if(name.length > 15) {
+      return res.render('start_chat', {error: "Name too long"});
+    }
     var id = hash(name);
+    if(rooms[id]) {
+      return res.redirect('/chat/' + id);
+    }
     var roominfo = createRoom(chatroom, censorers, io, id);
     rooms[id] = {
       room:roominfo.room,
       name: name
     }
-    res.redirect('/chat/' + id);
+    return res.redirect('/chat/' + id);
   });
 
   function clean(data) {
@@ -128,6 +138,18 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
     res.clearCookie('user', {path: '/login'});
     res.clearCookie('user', {path: '/chat'});
     res.redirect('/login');
+  });
+
+  app.get('/about', function(req, res) {
+    return res.render('about');
+  });
+
+  app.get('/rules', function(req, res) {
+    return res.render('rules');
+  });
+
+  app.get('/country_laws', function(req, res) {
+    return res.render('country_laws');
   });
 }
 
