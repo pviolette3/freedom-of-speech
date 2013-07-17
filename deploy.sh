@@ -2,10 +2,10 @@ export RUNMONGO='yes'
 export RUNLOG='yes'
 export PORT=8080
 
-echo "Refreshing weights..."
+echo "Recalculating weights...."
 cd ml
-./refresh_weights.sh
-cd ../
+bash iterate.sh
+cd ..
 
 echo "Launching node application.."
 if [[ "$1" == "-k" ]]
