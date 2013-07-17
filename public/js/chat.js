@@ -52,7 +52,7 @@ socket.on('connect', function() {
   }
 
   socket.on(codes.message, function(data) {
-     addConversation('<div><b>' + data.from.name +'</b>: ' + data.message + '</div>');
+    addConversation('<div><b>' + data.from.name +'</b>: ' + data.message + '</div>');
   });
 
   socket.on(codes.addUser, function(data) {
@@ -67,8 +67,21 @@ socket.on('connect', function() {
 
   socket.on(codes.censored, function(data){
     if(data.from && data.reason) {
+      var message = "because of the words ";
+      var inserted = false
+      for(var i = 0; i < data.reason.tokens.length; i++) {
+        if(data.reason.tokenScores[i] > 0) {
+          if(!inserted) {
+            message = message + data.reason.tokens[i];
+            inserted = true;
+          }else {
+            message = message + ", " + data.reason.tokens[i];
+          }
+        }
+      }
+      message += ".";
       addConversation('<div class="text-error"><b>' + data.from.name +
-                                 '</b> was censored because ' + data.reason + '</div>');
+                                 '</b> was censored because ' + message + '</div>');
     } 
   });
 });
