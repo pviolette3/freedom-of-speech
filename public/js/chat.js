@@ -1,3 +1,4 @@
+function start() {
 var socket = io.connect(getHost());
 var codes = {
   addUser: '1',
@@ -63,4 +64,5 @@ socket.on('connect', function() {
     } 
   });
 });
-
+}
+start();
