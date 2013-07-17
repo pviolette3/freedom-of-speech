@@ -64,10 +64,9 @@ function MLLinearCombCensor(weights, threshold, tokenizer) {
 }
 
 MLLinearCombCensor.prototype.censor = function(user, message) {
-  if(this.score(message) >= this.threshold) {
-    return new YesCensor(user, message, "Message received a score of " +
-                          this.score(message) + " which was larger than " +
-                          this.threshold);
+  var result = this.score(message);
+  if(result.score >= this.threshold) {
+    return new YesCensor(user, message, result );
   }
   else {
     return NoCensor;
@@ -76,11 +75,12 @@ MLLinearCombCensor.prototype.censor = function(user, message) {
 
 MLLinearCombCensor.prototype.score = function(message) {
   var tokens = message.split(this.tokenizer);
-  var score = 0;
+  var tokenScores = []
   for(var i = 0; i < tokens.length; i++) {
-    score += this.scoreWord(tokens[i]);
+    tokenScores.push(this.scoreWord(tokens[i]))
   }
-  return score;
+  var score = tokenScores.reduce(function(res, next) { return res + next;})
+  return {tokens: tokens, tokenScores: tokenScores, score: score};
 }
 
 MLLinearCombCensor.prototype.scoreWord = function(word) {

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 
 <script>
-  function getHost() {
-    return 'http://<%= host %>/'; 
+  function getChatInfo() {
+    return {
+      host: 'http://<%= host %>/<%= id %>',
+      user: '<%= user %>',
+      id: '<%= id %>' 
+    }
   }
-  
-  function getUser() {
-    return '<%= user %>';
-    //return prompt('Name?');
-  } 
 </script>
 
 <head>
@@ -59,6 +58,7 @@
         </div>
     </div>
     <div class="container-fluid max-height no-overflow">
+      Welcome to <%=name %>
         <div class="row-fluid max-height">
             <div id="user-container max-height" class="span3"><!--users-container-->
               <h4>Users:</h4>

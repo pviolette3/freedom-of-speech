@@ -28,31 +28,4 @@ server.listen(PORT);
 io = socketio.listen(server);
 io.set('log level', 1);
 
-routes.activate(app, check, sanitize);
-
-function clean(data) {
-  return sanitize(data).xss();
-}
-var listeners = [new chatroom.SocketIOForwardListener(io.sockets)];
-if(process.env.RUNMONGO && process.env.RUNMONGO != 'no') {
-  models.activate();
-  listeners.push(models.newMongoDBListener());
-}
-if(process.env.RUNLOG && process.env.RUNLOG != 'no') {
-  listeners.push(new chatroom.FSCensorLogger('ml/censored.txt', 'ml/noncensored.txt'));
-}
-var censorer = censorers.newMLLinearCombCensor();
-var theRoom = chatroom.createRoomWithListeners(listeners, censorer);
-io.sockets.on('connection', function(socket) {
-
-  socket.on('adduser', function(username) {
-    socket.user = new chatroom.User(clean(username));
-    theRoom.addUser(socket.user);
-  });
-  socket.on('disconnect', function() {
-    theRoom.removeUser(socket.user);
-  });
-  socket.on('sendchat', function(data) {
-    theRoom.sendMessage(socket.user, clean(data));
-  });
-});
+routes.activate(app, check, sanitize, chatroom, censorers, io);

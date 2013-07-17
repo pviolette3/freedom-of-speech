@@ -1,4 +1,6 @@
-var socket = io.connect(getHost());
+var chatInfo = getChatInfo();
+var socket = io.connect(chatInfo.host);
+console.log(chatInfo.host);
 var codes = {
   addUser: '1',
   removeUser: '2',
@@ -11,7 +13,13 @@ $(function() {
     var message = $('#data').val();
     $('#data').val('');
     $('#data').focus();
-    socket.emit('sendchat', message);
+    var sent = {
+      message: message,
+      id: chatInfo.id
+    };
+    socket.emit('sendchat', sent);
+    console.log("Sent")
+    console.log(sent)
   });
 
   $('#data').keypress(function(e) {
@@ -22,15 +30,16 @@ $(function() {
   });
 });
 socket.on('connect', function() {
-  socket.user = getUser();
-  socket.emit('adduser', socket.user);
+  socket.user = chatInfo.user;
+  socket.emit('adduser', {
+    user: socket.user,
+    id: chatInfo.id
+  });
   
   function updateUsers(users) {
     $('#users').empty();
     $.each(users, function(key, value) {
       var userRep = value.name;
-      console.log('socket.user is ' + socket.user);
-      console.log(value);
       if(socket.user === value.name) {
         userRep = '<b>' + userRep + '</b>'
       }

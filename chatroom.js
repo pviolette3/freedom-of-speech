@@ -108,8 +108,8 @@ SocketIOForwardListener.prototype. onUpdate = function(update) {
        (update.code === updateCodes.addUser) ||
        (update.code === updateCodes.removeUser) ||
        (update.code === updateCodes.censored) ) {
-//      console.log('Sending update:');
-//      console.log(update);
+      console.log('Sending update:');
+      console.log(update);
       this.to.emit(update.code, update.data);
     }
     else {
@@ -147,6 +147,7 @@ function createRoomWithListeners(listeners, censor) {
   listeners.forEach(function(listener) {
     room.addListener(listener);
   });
+  console.log("Adding listener");
   return room;
 }
 
