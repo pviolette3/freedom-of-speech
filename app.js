@@ -27,4 +27,4 @@ console.log('Launching app on port ' + PORT + '.');
 server.listen(PORT);
 io = socketio.listen(server);
 io.set('log level', 1);
-routes.activate(app, check, sanitize, chatroom, censorers, io);
+routes.activate(app, check, sanitize, chatroom, censorers, io, models);

@@ -1,4 +1,4 @@
-function activate(app, check, sanitize, chatroom, censorers, io) {
+function activate(app, check, sanitize, chatroom, censorers, io, models) {
 
   app.get('/', function(req, res) {
     res.redirect('/login');
