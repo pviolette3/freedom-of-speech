@@ -1,4 +1,5 @@
 i
+left
 must
 you
 he
@@ -94,5 +95,5 @@ two
 how
 give
 most
-
+was
 
