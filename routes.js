@@ -14,7 +14,7 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
 
   app.get('/chat/:id', function(req, res) {
     try {
-      check(req.params.id).isInt()
+      check(req.params.id).isInt();
     }catch(e) { 
       res.statusCode = 404;
       return res.send('Error: 404 not found');
@@ -28,10 +28,61 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
       return res.send('Error: No room with ' + id + ' exists.');
     }
     if(req.cookies.user) {
-      return res.render('active_chat', {host: req.host, name: rooms[id].name, user: req.cookies.user, id: id});
+      return res.render('active_chat', {host: req.host, name: rooms[id].name, user: req.cookies.user, id: id, admin: rooms[id].admin});
     }else {
       res.redirect('login', {error: 'Please log in.'});
     }
+  });
+
+  app.get('/chat/:id/settings', function(req, res) {
+    try {
+      check(req.params.id).isInt();
+    }catch(e) { 
+      res.statusCode = 404;
+      return res.send('Error: 404 not found');
+    }
+    if(req.params.id < 0) {
+      res.statusCode = 404;
+      return res.send('Error: 404 not found');
+    }
+
+    if(!req.cookies.user) {
+      return res.redirect('/login');
+    }
+    var id = req.params.id;
+    if(!rooms[id]) {
+      return res.send(404, 'That room does not exist');
+    }
+    var room = rooms[id];
+    return res.render('chat_settings', {
+      name: room.name,
+      id: id,
+      weights: room.weights
+    });
+  });
+
+  app.post('/chat/:id/weights', function(req, res) {
+    try {
+      check(req.params.id).isInt();
+    }catch(e) { 
+      res.statusCode = 404;
+      return res.send('Error: 404 not found');
+    }
+    if(req.params.id < 0) {
+      res.statusCode = 404;
+      return res.send('Error: 404 not found');
+    }
+
+    if(!req.cookies.user) {
+      return res.redirect('/login');
+    }
+    var id = req.params.id;
+    if(!rooms[id]) {
+      return res.send(404, 'That room does not exist');
+    }
+    var room = rooms[id];
+    room.weights[req.body.word] =  req.body.weight;
+    return res.redirect('/chat/' + id + '/settings');
   });
 
   app.get('/login', function(req, res) {
@@ -59,24 +110,27 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
     console.log('success!! Logging in...');
     res.clearCookie('error', {path: '/login'});
     res.cookie('user', their_name, {path: '/login'});
-    res.cookie('user', their_name, {path: '/chat'})
+    res.cookie('user', their_name, {path: '/chat'});
     res.redirect('/chat');
   });
 
   function hash(string) {
-      var hash = 0, i, char;
-      if (string.length == 0) return hash;
+      var result = 0, i, char;
+      if (string.length === 0) return result;
       for (i = 0, l = string.length; i < l; i++) {
               char  = string.charCodeAt(i);
-              hash  = ((hash<<5)-hash)+char;
-              hash |= 0; // Convert to 32bit integer
+              result  = ((result<<5)-result)+char;
+              result |= 0; // Convert to 32bit integer
       }
-      if(hash < 0) { return -hash;}
-      return hash;
-  };
+      if(result < 0) { return -result;}
+      return result;
+  }
 
   var rooms = {};
   app.post('/chat/new', function(req, res) {
+    if(!req.cookies.user) {
+      return res.redirect('/login');
+    }
     var name = clean(req.body.name);
     if(name.length > 15) {
       return res.render('start_chat', {error: "Name too long"});
@@ -87,9 +141,11 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
     }
     var roominfo = createRoom(chatroom, censorers, io, id);
     rooms[id] = {
-      room:roominfo.room,
-      name: name
-    }
+      room: roominfo.room,
+      name: name,
+      weights: roominfo.weights,
+      admin: req.cookies.user
+    };
     return res.redirect('/chat/' + id);
   });
 
@@ -131,7 +187,7 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
         }
       });
     });
-    return {room: theRoom};
+    return {room: theRoom, weights: censorer.weights};
   }
 
   app.get('/logout', function(req, res) {
