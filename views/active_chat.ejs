@@ -14,14 +14,15 @@
   <% include header_files %>
   <script src="/socket.io/socket.io.js" type="text/javascript" ></script>
   <script src="/js/chat.js" type="text/javascript"></script>
+  <style src="/css/start_chat.css"></style>
 </head>
 
 <html>
     <% include navbar %>
     <div class="container-fluid max-height no-overflow">
-      Welcome to <%= name %>
+      <h2>Welcome to <%= name %></h2>
     <% if(user === admin) { %> 
-        <br>You're the admin. Edit settings <a href="/chat/<%= id %>/settings">here</a>    
+        <h5>You're the admin. Edit settings <a href="/chat/<%= id %>/settings">here.</a></h5>   
     <% } %>
         <div class="row-fluid max-height">
             <div id="user-container max-height" class="span3"><!--users-container-->
@@ -31,8 +32,8 @@
 
             <div class="span8 max-height"><!--conversation-container-->
               <h4>Conversation</h4>
-              <input type="text" id="data" value="" />
-              <input type="button" class="btn" id="datasend" value="send"/>
+                  <input type="text" id="data" value="" />
+                  <input type="button" class="btn" id="datasend" value="send"/>
               <div id="conversation" class="scrollable"></div>
             </div>
         </div>
