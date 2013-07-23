@@ -1,0 +1,31 @@
+
+<head>
+  <% include header_files %>
+</head>
+
+<% function empty() { return rooms.length && rooms.length > 0; } %>
+<% include navbar %>
+
+<% if(empty()) { %>
+<div>
+  Join a chat!
+</div>
+<% } %>
+
+<ul>
+<% for(var id in rooms) { %>
+  <li><a href="/chat/<%= id %>"><%=rooms[id].name%></a></li>
+<% } %>
+</ul>
+
+<% if(empty()) { %>
+  <%= "Or" %>
+<% } %>
+<div>
+ create your own chat!
+</div>
+
+<form name="input" action="/chat/new" method="post">
+  Name <input type="text" name="name"><br>
+  <input type="submit" value="Create">
+</form>

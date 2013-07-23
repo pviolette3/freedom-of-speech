@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<script>
+  function getChatInfo() {
+    return {
+      host: 'http://<%= host %>/<%= id %>',
+      user: '<%= user %>',
+      id: '<%= id %>' 
+    }
+  }
+</script>
+
+<head>
+  <% include header_files %>
+  <script src="/socket.io/socket.io.js" type="text/javascript" ></script>
+  <script src="/js/chat.js" type="text/javascript"></script>
+</head>
+
+<html>
+    <% include navbar %>
+    <div class="container-fluid max-height no-overflow">
+      Welcome to <%=name %>
+        <div class="row-fluid max-height">
+            <div id="user-container max-height" class="span3"><!--users-container-->
+              <h4>Users:</h4>
+              <div id="users" class="scrollable"></div>
+            </div>
+
+            <div class="span8 max-height"><!--conversation-container-->
+              <h4>Conversation</h4>
+              <input type="text" id="data" value="" />
+              <input type="button" class="btn" id="datasend" value="send"/>
+              <div id="conversation" class="scrollable"></div>
+            </div>
+        </div>
+    </div>
+<html>

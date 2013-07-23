@@ -1,4 +1,5 @@
-function activate(app, check, sanitize) {
+function activate(app, check, sanitize, chatroom, censorers, io, models) {
+
   app.get('/', function(req, res) {
     res.redirect('/login');
   });
@@ -8,11 +9,13 @@ function activate(app, check, sanitize) {
     if(!req.cookies.user) {
       return res.redirect('/login');
     }
-    res.render('chat', {host:req.host, user: req.cookies.user || 'none'});
+    res.render('start_chat', {rooms: rooms, user: req.cookies.user || 'none'});
   });
 
   app.get('/chat/:id', function(req, res) {
-    if(!check(req.params.id).isInt()) {
+    try {
+      check(req.params.id).isInt()
+    }catch(e) { 
       res.statusCode = 404;
       return res.send('Error: 404 not found');
     }
@@ -20,7 +23,15 @@ function activate(app, check, sanitize) {
       res.statusCode = 404;
       return res.send('Error: 404 not found');
     }
-    return res.send(req.params.id);
+    var id = req.params.id;
+    if(!rooms[id]) {
+      return res.send('Error: No room with ' + id + ' exists.');
+    }
+    if(req.cookies.user) {
+      return res.render('active_chat', {host: req.host, name: rooms[id].name, user: req.cookies.user, id: id});
+    }else {
+      res.redirect('login', {error: 'Please log in.'});
+    }
   });
 
   app.get('/login', function(req, res) {
@@ -32,7 +43,6 @@ function activate(app, check, sanitize) {
 
   app.post('/login', function(req, res) {
     console.log('Got POST /login: cookies are');
-    console.log(req.cookies);
     var their_name = req.body.user;
     try {
       check(their_name, {
@@ -53,11 +63,93 @@ function activate(app, check, sanitize) {
     res.redirect('/chat');
   });
 
+  function hash(string) {
+      var hash = 0, i, char;
+      if (string.length == 0) return hash;
+      for (i = 0, l = string.length; i < l; i++) {
+              char  = string.charCodeAt(i);
+              hash  = ((hash<<5)-hash)+char;
+              hash |= 0; // Convert to 32bit integer
+      }
+      if(hash < 0) { return -hash;}
+      return hash;
+  };
+
+  var rooms = {};
+  app.post('/chat/new', function(req, res) {
+    var name = clean(req.body.name);
+    if(name.length > 15) {
+      return res.render('start_chat', {error: "Name too long"});
+    }
+    var id = hash(name);
+    if(rooms[id]) {
+      return res.redirect('/chat/' + id);
+    }
+    var roominfo = createRoom(chatroom, censorers, io, id);
+    rooms[id] = {
+      room:roominfo.room,
+      name: name
+    }
+    return res.redirect('/chat/' + id);
+  });
+
+  function clean(data) {
+    return sanitize(data).xss();
+  }
+
+  function createRoom(chatroom, censorers, io, id) {
+    var listeners = [];
+    if(process.env.RUNMONGO && process.env.RUNMONGO != 'no') {
+      models.activate();
+      listeners.push(models.newMongoDBListener());
+    }
+    if(process.env.RUNLOG && process.env.RUNLOG != 'no') {
+      listeners.push(new chatroom.FSCensorLogger('ml/' + id + 'censored.txt', 'ml/' + id + 'noncensored.txt'));
+    }
+    var censorer = censorers.newMLLinearCombCensor('ml/weights.txt', 10);
+    
+    var theRoom = chatroom.createRoomWithListeners(listeners, censorer);
+    io.of('/' + id).on('connection', function(socket) {
+      console.log("Connecting to " + id);
+      theRoom.addListener(new chatroom.SocketIOForwardListener(socket));
+      socket.on('adduser', function(data) {
+        console.log("Listening for " + id);
+        console.log("Got adduser " + data.id);
+        if(data.id == id) {
+          socket.user = new chatroom.User(clean(data.user));
+          theRoom.addUser(socket.user);
+        }
+      });
+      socket.on('disconnect', function() {
+        theRoom.removeUser(socket.user);
+      });
+      socket.on('sendchat', function(data) {
+        console.log("Listening for " + id);
+        console.log("Got sendchat for " + data.id);
+        if(data.id == id) {
+          theRoom.sendMessage(socket.user, clean(data.message));
+        }
+      });
+    });
+    return {room: theRoom};
+  }
 
   app.get('/logout', function(req, res) {
     res.clearCookie('user', {path: '/login'});
     res.clearCookie('user', {path: '/chat'});
     res.redirect('/login');
+  });
+
+  app.get('/about', function(req, res) {
+    return res.render('about');
+  });
+
+  app.get('/rules', function(req, res) {
+    return res.render('rules');
+  });
+
+  app.get('/country_laws', function(req, res) {
+    return res.render('country_laws');
   });
 }
 
