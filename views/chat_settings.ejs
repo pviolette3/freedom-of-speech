@@ -11,7 +11,7 @@
     Here is the info on your room. Click <a href="/chat/<%= id %>/">here</a> to go back.
     <form name="input" action="/chat/<%=id%>/weights" method="post">
       Word to update: <input type="text" name="word"> <br>
-      New weight: <input type="text" name="weight">
+      New weight: <input type="number" name="weight">
       <input type="submit" value="Update word">
     </form>
 
