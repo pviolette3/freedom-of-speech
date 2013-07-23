@@ -19,8 +19,6 @@ function start() {
         id: chatInfo.id
       };
       socket.emit('sendchat', sent);
-      console.log("Sent")
-      console.log(sent)
     });
 
     $('#data').keypress(function(e) {
@@ -42,7 +40,7 @@ function start() {
       $.each(users, function(key, value) {
         var userRep = value.name;
         if(socket.user === value.name) {
-          userRep = '<b>' + userRep + '</b>'
+          userRep = '<b>' + userRep + '</b>';
         }
         $('#users').append('<div>' + userRep + '</div>');
       });
@@ -50,6 +48,18 @@ function start() {
 
     function addConversation(message) {
      $('#conversation').prepend(message); 
+    }
+
+    function renderExplanation(user, tokens, weights) {
+      $('#explanation').empty(); 
+      $('#explanation').append(user + ' was censored based on the following words:<br>');
+      $('#explanation').append('<ul>');
+      for(var i = 0; i < tokens.length; i++) {
+        if(weights[i] > 0) {
+          $('#explanation').append('<li class="censored">' + tokens[i] + '</li>');
+        }
+      }
+      $('#explanation').append('</ul>');
     }
 
     socket.on(codes.message, function(data) {
@@ -68,22 +78,10 @@ function start() {
 
     socket.on(codes.censored, function(data){
       if(data.from && data.reason) {
-        var message = "because of the words ";
-        var inserted = false
-        for(var i = 0; i < data.reason.tokens.length; i++) {
-          if(data.reason.tokenScores[i] > 0) {
-            if(!inserted) {
-              message = message + data.reason.tokens[i];
-              inserted = true;
-            }else {
-              message = message + ", " + data.reason.tokens[i];
-            }
-          }
-        }
-        message += ".";
+        renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
+      }
         addConversation('<div class="text-error"><b>' + data.from.name +
-                                   '</b> was censored because ' + message + '</div>');
-      } 
+                                   '</b> was censored. See explanation. </div>');
     });
   });
 }
