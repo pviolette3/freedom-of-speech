@@ -5,7 +5,7 @@
     return {
       host: 'http://<%= host %>/<%= id %>',
       user: '<%= user %>',
-      id: '<%= id %>' 
+      id: '<%= id %>',
     }
   }
 </script>
@@ -20,7 +20,10 @@
 <html>
     <% include navbar %>
     <div class="container-fluid max-height no-overflow">
-      Welcome to <%=name %>
+      Welcome to <%= name %>
+    <% if(user === admin) { %> 
+        <br>You're the admin. Edit settings <a href="/chat/<%= id %>/settings">here</a>    
+    <% } %>
         <div class="row-fluid max-height">
             <div id="user-container max-height" class="span3"><!--users-container-->
               <h4>Users:</h4>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <% include header_files %>
+  </head>
+  
+  <body>
+    <% include navbar %>
+    Hello, admin! <br>
+    Here is the info on your room. Click <a href="/chat/<%= id %>/">here</a> to go back.
+    <form name="input" action="/chat/<%=id%>/weights" method="post">
+      Word to update: <input type="text" name="word"> <br>
+      New weight: <input type="text" name="weight">
+      <input type="submit" value="Update word">
+    </form>
+
+    <ul>
+      <% for(var word in weights) { %>
+        <li> <%= word %> : <%= weights[word] %> </li> 
+      <% } %>
+    </ul>
+
+  </body>
+
+</html>
