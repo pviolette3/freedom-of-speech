@@ -21,8 +21,17 @@ body, html {
     overflow:auto;
 }
 
+.scrollable-short {
+    height:82%;
+    overflow:auto;
+}
+
 .max-height {
     height:92%;
+}
+
+.max-height-short{
+    height:82%;
 }
 
 .no-overflow {
