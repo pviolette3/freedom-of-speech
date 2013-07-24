@@ -19,6 +19,8 @@ function start() {
         id: chatInfo.id
       };
       socket.emit('sendchat', sent);
+      console.log("Sent")
+      console.log(sent)
     });
 
     $('#data').keypress(function(e) {
@@ -40,7 +42,7 @@ function start() {
       $.each(users, function(key, value) {
         var userRep = value.name;
         if(socket.user === value.name) {
-          userRep = '<b>' + userRep + '</b>';
+          userRep = '<b>' + userRep + '</b>'
         }
         $('#users').append('<div>' + userRep + '</div>');
       });
@@ -50,38 +52,9 @@ function start() {
      $('#conversation').prepend(message); 
     }
 
-    function renderExplanation(user, tokens, weights) {
-      $('#explanation').empty(); 
-      $('#explanation').append(user + ' was censored based on the following words:<br>');
-      $('#explanation').append('<ul>');
-      for(var i = 0; i < tokens.length; i++) {
-        if(weights[i] > 0) {
-          $('#explanation').append('<li class="censored">' + tokens[i] + '</li>');
-        }
-      }
-      $('#explanation').append('</ul>');
-
+    socket.on(codes.message, function(data) {
       addConversation('<div><b>' + data.from.name +'</b>: ' + data.message + '</div>');
-      
-       var jsonCircles = [{ "x_axis": 30, "y_axis": 30, "radius": 20, "color" : "green" },
-                          { "x_axis": 70, "y_axis": 70, "radius": 20, "color" : "purple"},
-                          { "x_axis": 110, "y_axis": 100, "radius": 20, "color" : "red"}];
- 
-       var svgContainer = d3.select("#explanation").append("svg")
-                                     .attr("width", 200)
-                                     .attr("height", 200);
- 
-       var circles = svgContainer.selectAll("circle").data(jsonCircles)
-                            .enter()
-                            .append("circle");
-
-      var circleAttributes = circles
-                         .attr("cx", function (d) { return d.x_axis; })
-                         .attr("cy", function (d) { return d.y_axis; })
-                         .attr("r", function (d) { return d.radius; })
-                         .style("fill", function(d) { return d.color; });
-
-    }
+    });
 
     socket.on(codes.addUser, function(data) {
       addConversation('<div>' + data.changed.name + ' was added.</div>');
@@ -92,21 +65,32 @@ function start() {
       addConversation('<div>' + data.changed.name + ' has left.</div>'); 
       updateUsers(data.all);
     });
+
+    function renderExplanation(user, tokens, weights) {
+      $('#explanation').empty(); 
+      $('#explanation').append(user + ' was censored based on the following words:<br>');
+      $('#explanation').append('<ul>');
+      for(var i = 0; i < tokens.length; i++) {
+        if(weights[i] > 0) {
+          $('#explanation').append('<li class="text-error">' + tokens[i] + '</li>');
+        }
+      }
+      $('#explanation').append('</ul>');
+    }
     var curId = 0;
     socket.on(codes.censored, function(data){
       if(data.from && data.reason) {
-        renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
+          renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
       }
-        addConversation('<div class="text-error" name="' + curId + '"><b>' + data.from.name +
-                                   '</b> was censored. See explanation. </div>');
-        var elementSelector = "[name='" + curId + "']";
-        $(elementSelector).hover(function() {
+      addConversation('<div class="text-error" name="' + curId + '"><b>' + data.from.name + '</b> was censored. Hover for explanation</div>');
+      var elementSelector = "[name='" + curId + "']";
+      $(elementSelector).hover(function() {
           renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
           $(this).toggleClass('text-warning');
           $(this).toggleClass('text-error');
-        });
-        curId++;
-    });
+      });
+      curId++;
+      });
   });
 }
 start();
