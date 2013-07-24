@@ -160,7 +160,7 @@ function activate(app, check, sanitize, chatroom, censorers, io, models) {
       listeners.push(models.newMongoDBListener());
     }
     if(process.env.RUNLOG && process.env.RUNLOG != 'no') {
-      listeners.push(new chatroom.FSCensorLogger('ml/' + id + 'censored.txt', 'ml/' + id + 'noncensored.txt'));
+      listeners.push(new chatroom.FSCensorLogger('ml/' + id + 'censored.txt', 'ml/' + id + 'uncensored.txt'));
     }
     var censorer = censorers.newMLLinearCombCensor('ml/weights.txt', 10);
     
