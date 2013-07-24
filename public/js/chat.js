@@ -68,7 +68,7 @@ function start() {
 
     function renderExplanation(user, tokens, weights) {
       $('#explanation').empty(); 
-      $('#explanation').append(user + ' was censored based on the following words:<br>');
+      $('#explanation').append('<b>' + user + '</b> was censored based on the following words:<br>');
       $('#explanation').append('<ul>');
       for(var i = 0; i < tokens.length; i++) {
         if(weights[i] > 0) {
@@ -82,12 +82,15 @@ function start() {
       if(data.from && data.reason) {
           renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
       }
-      addConversation('<div class="text-error" name="' + curId + '"><b>' + data.from.name + '</b> was censored. Hover for explanation</div>');
+      addConversation('<div class="text-error" name="' + curId + '"><b>' + data.from.name + '</b> was censored. Hover or click for explanation</div>');
       var elementSelector = "[name='" + curId + "']";
       $(elementSelector).hover(function() {
           renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
           $(this).toggleClass('text-warning');
           $(this).toggleClass('text-error');
+      });
+      $(elementSelector).click(function() {
+          renderExplanation(data.from.name, data.reason.tokens, data.reason.tokenScores);
       });
       curId++;
       });
