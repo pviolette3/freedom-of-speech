@@ -6,3 +6,5 @@ ml/censored.txt
 ml/noncensored.txt
 ml/weights.txt
 ml/*censored.txt
+*~
+~*
