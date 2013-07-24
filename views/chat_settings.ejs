@@ -7,20 +7,26 @@
   
   <body>
     <% include navbar %>
-    Hello, admin! <br>
-    Here is the info on your room. Click <a href="/chat/<%= id %>/">here</a> to go back.
-    <form name="input" action="/chat/<%=id%>/weights" method="post">
-      Word to update: <input type="text" name="word"> <br>
-      New weight: <input type="text" name="weight">
-      <input type="submit" value="Update word">
-    </form>
-
-    <ul>
-      <% for(var word in weights) { %>
-        <li> <%= word %> : <%= weights[word] %> </li> 
-      <% } %>
-    </ul>
-
+    <div class="container-fluid max-height no-overflow">
+        <div class="row-fluid">
+            <h2>Hello, admin!</h2>
+            <h4>Here is the info on your room. Click <a href="/chat/<%= id %>/">here</a> to go back.</h4>
+            <form name="input" action="/chat/<%=id%>/weights" method="post">
+                <input type="text" name="word" placeholder="Word to update:"> <br>
+                <div class="form-horizontal">
+                    <input type="number" name="weight" placeholder="New weight:">
+                    <input type="submit" value="Update word" class="btn">
+                </div>
+            </form>
+        </div>
+        <div class="row=fluid max-height-short">
+            <ul class="scrollable-short">
+              <% for(var word in weights) { %>
+                <li> <%= word %> : <%= weights[word] %> </li> 
+              <% } %>
+            </ul>
+        </div>
+    </div>
   </body>
 
 </html>
