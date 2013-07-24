@@ -39,7 +39,7 @@ Add-full
 Aerospace
 against
 Agency
-(Ai
+Ai
 Aide
 aiww
 alliance
@@ -1167,6 +1167,13 @@ assfucker
 dumbass
 shithead
 shithole
+shittitties
+shoot
+shot
+kill
+murder
+rape
+maim
 goddamn
 motherfucker
 cocksucker
@@ -1201,6 +1208,7 @@ va-jay-jay
 nigger
 niggerfaggot
 niglet
+jailbait
 ##################
 uga
 bulldogs
