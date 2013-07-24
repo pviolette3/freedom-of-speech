@@ -20,9 +20,11 @@
             </form>
         </div>
         <div class="row=fluid max-height-short">
+            <h4> Format is <i>Word : Offensiveness Score</i></h4>
+            <h6> <i>A score of 10 causes censorship.</i> </h6>
             <ul class="scrollable-short">
               <% for(var word in weights) { %>
-                <li> <%= word %> : <%= weights[word] %> </li> 
+                <li> <b><%= word %></b> : <%= weights[word] %> </li> 
               <% } %>
             </ul>
         </div>
