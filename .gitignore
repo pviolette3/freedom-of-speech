@@ -5,6 +5,7 @@ node_modules
 ml/censored.txt
 ml/noncensored.txt
 ml/weights.txt
+ml/greylist.txt
 ml/*censored.txt
 ml/archive/*
 *~
